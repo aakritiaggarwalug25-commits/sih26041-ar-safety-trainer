@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Certified Results — SafeAR Assessment Platform</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <header class="app-nav">
+        <a class="brand" href="index.html">
+            <span class="brand-mark">🛡️</span>
+            <div>
+                <strong>Safe<span>AR</span></strong>
+                <small>Audit &amp; Telemetry Report</small>
+            </div>
+        </a>
+        <div class="app-nav-right">
+            <span class="app-nav-user" id="userName">Trainee</span>
+            <a href="scenarios.html" class="app-nav-link">Training Catalogue</a>
+            <button class="app-nav-logout" id="logoutBtn">Logout</button>
+        </div>
+    </header>
+
+    <main class="results-page">
+        <div class="results-header">
+            <div class="section-label">PERFORMANCE AUDIT</div>
+            <h1>Certified Training History</h1>
+            <p class="section-intro">
+                Review your completed spatial safety assessments, compliance percentages, master rating tiers, and step-by-step decision telemetry.
+            </p>
+        </div>
+
+        <!-- Summary Stats Grid -->
+        <div class="results-stats" id="resultsStats">
+            <div class="result-stat-card">
+                <div class="result-stat-value" id="statAttempts">—</div>
+                <div class="result-stat-label">Total Attempts</div>
+            </div>
+            <div class="result-stat-card">
+                <div class="result-stat-value" id="statAvgScore" style="color:var(--primary);">—</div>
+                <div class="result-stat-label">Average Score</div>
+            </div>
+            <div class="result-stat-card">
+                <div class="result-stat-value" id="statBestScore" style="color:var(--color-excellent);">—</div>
+                <div class="result-stat-label">Best Score</div>
+            </div>
+            <div class="result-stat-card">
+                <div class="result-stat-value" id="statBestRating" style="font-size:24px; color:var(--accent-amber);">—</div>
+                <div class="result-stat-label">Best Rating</div>
+            </div>
+        </div>
+
+        <!-- Results List -->
+        <div class="results-list" id="resultsList">
+            <div class="results-loading" style="text-align:center; padding:48px 0; color:var(--text-muted);">
+                <div class="loading-spinner-dark" style="display:inline-block; width:32px; height:32px; border:3px solid var(--border-card); border-top-color:var(--primary); border-radius:50%; animation:spin 0.8s linear infinite; margin-bottom:12px;"></div>
+                <p>Loading certified assessment history…</p>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="results-empty" id="resultsEmpty" style="display:none; text-align:center; padding:60px 20px; background:var(--bg-card); border:1px solid var(--border-card); border-radius:var(--radius-xl);">
+            <div class="results-empty-icon" style="font-size:48px; margin-bottom:16px;">📋</div>
+            <h3 style="font-size:22px; margin:0 0 8px;">No Assessment Records Yet</h3>
+            <p style="color:var(--text-secondary); max-width:480px; margin:0 auto 24px;">Complete your first AR safety training module to generate certified compliance telemetry.</p>
+            <a href="scenarios.html" class="primary-button">Explore Scenarios <span>→</span></a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-brand">Safe<span>AR</span></div>
+        <p>Industrial Safety Training Platform &middot; SIH26041</p>
+        <a href="index.html">Back to Home</a>
+    </footer>
+
+    <script src="js/config.js"></script>
+    <script src="js/engine/i18n.js"></script>
+    <script src="js/engine/scenarioEngine.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        // Auth guard
+        if (!SafeAuth.requireAuth()) {
+            // Will redirect
+        } else {
+            init();
+        }
+
+        function init() {
+            const user = SafeAuth.getUser();
+            const nameEl = document.getElementById("userName");
+            if (nameEl && user) {
+                nameEl.textContent = user.name || user.email || "Trainee";
+            }
+            document.getElementById("logoutBtn").addEventListener("click", () => SafeAuth.logout());
+            const uid = user && (user.uid || user.email);
+            if (uid) {
+                ScenarioEngine.load().catch(() => {}).then(() => loadResults(uid));
+            }
+        }
+
+        function getRating(pct) {
+            if (pct >= 90) return "Excellent";
+            if (pct >= 70) return "Good";
+            if (pct >= 50) return "Needs Improvement";
+            return "Failed";
+        }
+
+        function getBadgeClass(rating) {
+            const r = String(rating || "").toLowerCase();
+            if (r.includes("excellent")) return "badge-excellent";
+            if (r.includes("good")) return "badge-good";
+            if (r.includes("needs") || r.includes("average")) return "badge-needs-improvement";
+            return "badge-failed";
+        }
+
+        function getScoreColor(pct) {
+            if (pct >= 90) return "var(--color-excellent)";
+            if (pct >= 70) return "var(--color-good)";
+            if (pct >= 50) return "var(--color-needs-improvement)";
+            return "var(--color-failed)";
+        }
+
+        function formatDate(dateVal) {
+            if (!dateVal) return "Recently Completed";
+            try {
+                let d;
+                if (dateVal._seconds) d = new Date(dateVal._seconds * 1000);
+                else d = new Date(dateVal);
+                return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+            } catch {
+                return "Certified Record";
+            }
+        }
+
+        async function loadResults(userId) {
+            const listEl = document.getElementById("resultsList");
+            const emptyEl = document.getElementById("resultsEmpty");
+            const statsEl = document.getElementById("resultsStats");
+
+            try {
+                const resp = await SafeAuth.authFetch(
+                    API_BASE_URL + "/api/results/user/" + userId
+                );
+                const data = await resp.json();
+
+                if (!data.success || !data.results || data.results.length === 0) {
+                    listEl.style.display = "none";
+                    statsEl.style.display = "none";
+                    emptyEl.style.display = "block";
+                    return;
+                }
+
+                const results = data.results;
+
+                // Compute stats
+                const avgScore = Math.round(
+                    results.reduce((s, r) => s + (r.percentage || 0), 0) / results.length
+                );
+                const bestResult = results.reduce((best, r) =>
+                    (r.percentage || 0) > (best.percentage || 0) ? r : best
+                , results[0]);
+
+                document.getElementById("statAttempts").textContent = results.length;
+                document.getElementById("statAvgScore").textContent = avgScore + "%";
+                document.getElementById("statBestScore").textContent = (bestResult.percentage || 0) + "%";
+                document.getElementById("statBestRating").textContent = bestResult.rating || getRating(bestResult.percentage || 0);
+
+                // Sort by date (newest first)
+                results.sort((a, b) => {
+                    const da = a.completedAt ? (a.completedAt._seconds ? a.completedAt._seconds : new Date(a.completedAt).getTime() / 1000) : 0;
+                    const db = b.completedAt ? (b.completedAt._seconds ? b.completedAt._seconds : new Date(b.completedAt).getTime() / 1000) : 0;
+                    return db - da;
+                });
+
+                // Render results cards — one per module attempt, matching the
+                // logging_schema in content/ar_safety_training_modules.json:
+                // session-level fields on the attempt, per_question_event_fields
+                // on each entry in `events`. hazard_type/action_type are internal
+                // codes and are intentionally never rendered here — only the
+                // scenario_title resolved via ScenarioEngine is trainee-facing.
+                listEl.innerHTML = results.map((r) => {
+                    const pct = r.percentage || 0;
+                    const rating = r.rating || getRating(pct);
+                    const badgeClass = getBadgeClass(rating);
+                    const date = formatDate(r.completedAt || r.createdAt);
+                    const mod = ScenarioEngine.getModule ? ScenarioEngine.getModule(r.module_id) : null;
+                    const moduleName = (mod && I18n.field(mod.module_name)) || r.module_id || "Assessment";
+                    const events = r.events || [];
+
+                    return `
+                        <article class="result-card">
+                            <div class="result-card-header">
+                                <div>
+                                    <h3 style="font-size:19px; margin:0 0 6px;">${moduleName}</h3>
+                                    <span class="result-card-date">⏱ ${date}</span>
+                                </div>
+                                <span class="result-badge ${badgeClass}">${rating}</span>
+                            </div>
+                            <div class="result-card-scores">
+                                <div class="result-score-bar">
+                                    <div class="result-score-fill" style="width:${pct}%; background:${getScoreColor(pct)};"></div>
+                                </div>
+                                <div class="result-score-numbers">
+                                    <span>Score: <strong style="color:var(--text-primary);">${r.score || 0}</strong> / ${r.maxScore || 0} pts</span>
+                                    <span class="result-pct" style="color:${getScoreColor(pct)};">${pct}%</span>
+                                </div>
+                            </div>
+                            ${events.length > 0 ? `
+                                <details class="result-steps" style="margin-top:16px; border-top:1px solid var(--border-subtle); padding-top:12px;">
+                                    <summary style="color:var(--primary-hover); font-size:13.5px; font-weight:600; cursor:pointer;">
+                                        Inspect ${events.length} Scenario Audits ▾
+                                    </summary>
+                                    <div class="result-steps-list" style="margin-top:12px; display:flex; flex-direction:column; gap:8px;">
+                                        ${events.map(ev => {
+                                            const isCorr = ev.result === "CORRECT";
+                                            const question = ScenarioEngine.getQuestion ? ScenarioEngine.getQuestion(r.module_id, ev.question_id) : null;
+                                            const title = (question && I18n.field(question.scenario_title)) || ev.question_id;
+                                            return `
+                                                <div class="result-step" style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; border-radius:var(--radius-sm); font-size:13px; background:rgba(0,0,0,0.3); border-left:3px solid ${isCorr ? 'var(--color-excellent)' : 'var(--color-failed)'};">
+                                                    <div>
+                                                        <strong style="color:var(--text-primary);">${title}</strong>
+                                                        <div style="color:var(--text-muted); font-size:11.5px; margin-top:2px;">
+                                                            ${ev.result} · Attempts: ${ev.attempt_count != null ? ev.attempt_count : '—'} · Time: ${ev.time_taken_ms != null ? Math.round(ev.time_taken_ms / 100) / 10 + 's' : '—'}
+                                                        </div>
+                                                    </div>
+                                                    <span style="font-weight:700; color:${isCorr ? 'var(--color-excellent)' : 'var(--color-failed)'};">
+                                                        ${isCorr ? '+10 pts' : '+0 pts'}
+                                                    </span>
+                                                </div>
+                                            `;
+                                        }).join("")}
+                                    </div>
+                                </details>
+                            ` : ''}
+                        </article>
+                    `;
+                }).join("");
+
+            } catch (err) {
+                console.error("[Results] Error fetching results:", err);
+                listEl.innerHTML = `
+                    <div class="results-error" style="text-align:center; padding:40px; color:#ef4444;">
+                        <p>Error loading performance history. Please verify the backend is running.</p>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

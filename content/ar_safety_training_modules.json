@@ -1,0 +1,1194 @@
+{
+  "project": {
+    "name_en": "AR Vocational Safety Training Simulator -- Jharkhand Mining & Manufacturing",
+    "name_hi": "एआर व्यावसायिक सुरक्षा प्रशिक्षण सिम्युलेटर -- झारखंड खनन एवं विनिर्माण",
+    "context": "Smart India Hackathon (SIH) project. Markerless AR (plane + object + light detection, no markers/QR). Language is a single session-level preference (en/hi) set before module selection and applied to the entire experience.",
+    "schema_version": "1.0"
+  },
+  "environment_condition_taxonomy": {
+    "OPEN_OUTDOOR_BRIGHT": "Large horizontal plane, high ambient lux, outdoor-typical light spectrum.",
+    "OPEN_INDOOR_FLOOR": "Large horizontal plane, moderate ambient lux, indoor-typical light spectrum.",
+    "CONFINED_SPACE_LOW_LIGHT": "Small bounded volume (short plane extents on multiple sides), low ambient lux.",
+    "CLUTTERED_AREA": "Object-detection returns many discrete small objects on/near a horizontal plane.",
+    "BLANK_VERTICAL_SURFACE": "Large vertical plane detected with few or no surrounding objects.",
+    "VERTICAL_SURFACE_WITH_MACHINERY_OBJECTS": "Vertical plane detected plus nearby object detection flags machine/panel/pipe-like shapes.",
+    "ELEVATED_PLATFORM_EDGE": "Horizontal plane bounded by a detected edge/discontinuity (drop-off).",
+    "NARROW_PASSAGE": "Horizontal plane constrained in width by close side boundaries.",
+    "LOW_LIGHT_GENERAL": "Low ambient lux regardless of space size or clutter.",
+    "NEAR_DETECTED_MACHINERY_FLOOR": "Horizontal floor plane with a nearby object detected as machine-shaped."
+  },
+  "logging_schema": {
+    "session_level_fields": [
+      "session_id",
+      "trainee_id",
+      "user_language_preference",
+      "session_start_timestamp",
+      "session_end_timestamp",
+      "module_sequence"
+    ],
+    "per_question_event_fields": [
+      "module_id",
+      "question_id",
+      "hazard_type",
+      "action_type",
+      "environment_detected",
+      "attempt_count",
+      "time_taken_ms",
+      "result",
+      "event_timestamp"
+    ],
+    "notes": "Field names are identical across all 3 modules for dashboard-side schema consistency. user_language_preference is logged once per session, not duplicated on every question event. hazard_type and action_type are stable internal codes (English only, not shown to trainee)."
+  },
+  "modules": [
+    {
+      "module_id": "MOD01_FIRE_GAS_EXPLOSION",
+      "module_name": {
+        "en": "Fire, Gas & Explosion Hazard Response",
+        "hi": "आग, गैस एवं विस्फोट खतरा प्रतिक्रिया"
+      },
+      "hazard_category": "Fire, Gas & Explosion Hazards",
+      "relevance": "Jharkhand holds India's largest coal reserves (Jharia, Bokaro, North/South Karanpura coalfields), where methane accumulation, coal dust suspension and underground seam fires are leading causes of mass-casualty incidents; manufacturing units (steel, explosives, chemical) add hot-work and flammable-storage risk.",
+      "scan_instruction": {
+        "en": "Scan your surroundings slowly -- point the camera at floors, walls and any visible pipes or equipment.",
+        "hi": "अपने आस-पास को धीरे-धीरे स्कैन करें -- कैमरे को फर्श, दीवारों और किसी भी दिखने वाले पाइप या उपकरण की ओर करें।"
+      },
+      "items": [
+        {
+          "question_id": "MOD01_Q01",
+          "hazard_type": "naked_flame_near_coal_dust",
+          "action_type": "tap_hold_extinguish",
+          "scenario_title": {
+            "en": "Open Flame Near Coal Dust Accumulation",
+            "hi": "कोयला धूल के ढेर के पास खुली लौ"
+          },
+          "environment_conditions": [
+            {
+              "condition": "CLUTTERED_AREA",
+              "reasoning": "Coal handling/transfer points naturally register as dust-laden, cluttered surfaces."
+            },
+            {
+              "condition": "CONFINED_SPACE_LOW_LIGHT",
+              "reasoning": "Underground transfer points are enclosed and dim, matching real coal-dust ignition zones."
+            },
+            {
+              "condition": "NEAR_DETECTED_MACHINERY_FLOOR",
+              "reasoning": "Conveyor/crusher floors accumulate fine dust suitable for this hazard."
+            }
+          ],
+          "hazard_description": {
+            "en": "A visible flame flickers beside a heap of loose black dust on the detected floor surface; a faint dust haze drifts upward.",
+            "hi": "पहचानी गई फर्श सतह पर काले ढीले धूल के ढेर के बगल में एक लौ टिमटिमा रही है; हल्की धूल की धुंध ऊपर उठ रही है।"
+          },
+          "interaction": "Tap-and-hold a virtual extinguisher icon over the flame for 2 continuous seconds (simulated smothering sweep) within an 8-second countdown before the dust flashes.",
+          "correct_outcome": {
+            "en": "Flame extinguished before ignition. Popup: 'Correct -- flame smothered before coal dust could combust. Coal dust suspended in air can flash-ignite in milliseconds.'",
+            "hi": "प्रज्वलन से पहले लौ बुझाई गई। पॉपअप: 'सही -- कोयला धूल के जलने से पहले लौ बुझा दी गई। हवा में उड़ी कोयला धूल मिलीसेकंड में आग पकड़ सकती है।'"
+          },
+          "incorrect_outcome": {
+            "en": "Timer expires / wrong tap location. Alarm popup: 'Dust cloud ignites -- simulated flash fire. Coal dust explosions have caused multiple-fatality incidents in Indian collieries.'",
+            "hi": "समय समाप्त / गलत जगह टैप। अलार्म पॉपअप: 'धूल के बादल में आग लग गई -- यह एक फ्लैश फायर है। भारतीय कोयला खदानों में कोयला धूल विस्फोट से कई मौतें हो चुकी हैं।'"
+          },
+          "ar_feasibility": null
+        },
+        {
+          "question_id": "MOD01_Q02",
+          "hazard_type": "methane_gas_pocket",
+          "action_type": "physical_move_to_safe_zone",
+          "scenario_title": {
+            "en": "Methane Gas Pocket in Underground Gallery",
+            "hi": "भूमिगत सुरंग में मीथेन गैस की जेब"
+          },
+          "environment_conditions": [
+            {
+              "condition": "CONFINED_SPACE_LOW_LIGHT",
+              "reasoning": "Gas pockets accumulate in enclosed, poorly ventilated underground-style spaces."
+            },
+            {
+              "condition": "NARROW_PASSAGE",
+              "reasoning": "Gas lingers in narrow galleries with limited air movement."
+            },
+            {
+              "condition": "LOW_LIGHT_GENERAL",
+              "reasoning": "Reduced lighting is characteristic of underground working faces."
+            }
+          ],
+          "hazard_description": {
+            "en": "A translucent yellow-tinted gas cloud overlay fills part of the scanned space; a virtual gas-detector reading pulses red near it.",
+            "hi": "स्कैन की गई जगह के एक हिस्से में हल्के पीले रंग की पारदर्शी गैस बादल दिखाई देती है; उसके पास एक वर्चुअल गैस-डिटेक्टर लाल रंग में झपक रहा है।"
+          },
+          "interaction": "Trainee must physically walk (tracked via device world-position) from current position to a highlighted green floor marker at least 3 metres outside the gas cloud radius within 10 seconds.",
+          "correct_outcome": {
+            "en": "Reached safe zone in time. Popup: 'Correct -- moved to fresh air before exposure. Methane displaces oxygen and is explosive between 5-15% concentration in air.'",
+            "hi": "समय पर सुरक्षित क्षेत्र में पहुंचे। पॉपअप: 'सही -- एक्सपोज़र से पहले ताज़ी हवा में चले गए। मीथेन ऑक्सीजन की जगह लेती है और हवा में 5-15% सांद्रता पर विस्फोटक होती है।'"
+          },
+          "incorrect_outcome": {
+            "en": "Did not reach zone in time. Alarm popup: 'Gas exposure/ignition simulated. Underground gas asphyxiation and explosions are among the leading causes of mining fatalities in India.'",
+            "hi": "समय पर क्षेत्र में नहीं पहुंचे। अलार्म पॉपअप: 'गैस एक्सपोज़र/प्रज्वलन का अनुकरण। भूमिगत गैस दम घुटना और विस्फोट भारत में खनन मौतों के प्रमुख कारणों में से हैं।'"
+          },
+          "ar_feasibility": {
+            "issue": "Requires adequate open, obstacle-free real floor space (min. ~3-4 m) for the physical-walking task.",
+            "min_requirement": "Pre-scan floor-area validation before spawning movement-based tasks; no special sensor needed beyond standard world tracking, but the app must check plane size first."
+          }
+        },
+        {
+          "question_id": "MOD01_Q03",
+          "hazard_type": "frayed_wire_near_flammables",
+          "action_type": "tap_hold_isolate_circuit",
+          "scenario_title": {
+            "en": "Sparking Cable Near Oil-Soaked Rags",
+            "hi": "तेल में भीगे कपड़ों के पास चिंगारी छोड़ता तार"
+          },
+          "environment_conditions": [
+            {
+              "condition": "VERTICAL_SURFACE_WITH_MACHINERY_OBJECTS",
+              "reasoning": "Cabling typically runs along walls near detected equipment."
+            },
+            {
+              "condition": "CLUTTERED_AREA",
+              "reasoning": "Maintenance bays/stores naturally contain scattered rags/material, matching object-detection clutter."
+            },
+            {
+              "condition": "NEAR_DETECTED_MACHINERY_FLOOR",
+              "reasoning": "Electrical panels are commonly sited near machinery."
+            }
+          ],
+          "hazard_description": {
+            "en": "A frayed cable on the wall emits intermittent spark particles above a pile of oil-stained cloth on the floor.",
+            "hi": "दीवार पर एक कटा-फटा तार तेल से सने कपड़ों के ढेर के ऊपर रुक-रुक कर चिंगारी छोड़ रहा है।"
+          },
+          "interaction": "Tap-and-hold the virtual isolator/breaker icon (snapped onto a nearby detected panel, or a floating marker if none detected) for 3 seconds to de-energise the circuit before an 8-second spark timer ends.",
+          "correct_outcome": {
+            "en": "Circuit isolated in time. Popup: 'Correct -- power isolated before ignition. Electrical faults are a common ignition source for workshop fires.'",
+            "hi": "समय पर सर्किट आइसोलेट किया गया। पॉपअप: 'सही -- प्रज्वलन से पहले बिजली आइसोलेट कर दी गई। बिजली की खराबी वर्कशॉप आग का एक सामान्य कारण है।'"
+          },
+          "incorrect_outcome": {
+            "en": "Timer expires. Alarm popup: 'Rags ignite -- simulated fire spreads. Uninspected wiring near combustible material is a frequent cause of industrial fires.'",
+            "hi": "समय समाप्त। अलार्म पॉपअप: 'कपड़ों में आग लग गई -- अनुकरणित आग फैलती है। ज्वलनशील सामग्री के पास बिना जांचे तार औद्योगिक आग का एक सामान्य कारण है।'"
+          },
+          "ar_feasibility": {
+            "issue": "For the isolator icon to visually 'snap' onto a real detected electrical panel rather than float in space, the object-detection model must recognise panel-like shapes reliably.",
+            "min_requirement": "Trained object-detection model for panel/switchgear recognition, or fallback to a floating UI marker when no panel is detected."
+          }
+        },
+        {
+          "question_id": "MOD01_Q04",
+          "hazard_type": "unauthorized_hot_work_near_fuel",
+          "action_type": "drag_object_away",
+          "scenario_title": {
+            "en": "Welding Near Open Fuel Drums",
+            "hi": "खुले ईंधन ड्रम के पास वेल्डिंग"
+          },
+          "environment_conditions": [
+            {
+              "condition": "OPEN_INDOOR_FLOOR",
+              "reasoning": "Fabrication bays are typically open indoor floor areas."
+            },
+            {
+              "condition": "CLUTTERED_AREA",
+              "reasoning": "Workshops with stored drums/tools register as cluttered to object detection."
+            },
+            {
+              "condition": "NEAR_DETECTED_MACHINERY_FLOOR",
+              "reasoning": "Welding stations are sited near fixed machinery/workbenches."
+            }
+          ],
+          "hazard_description": {
+            "en": "A welding spark shower falls beside two open fuel drums placed a short distance from the torch on the floor.",
+            "hi": "फर्श पर मशाल से थोड़ी दूरी पर रखे दो खुले ईंधन ड्रम के बगल में वेल्डिंग की चिंगारियां गिर रही हैं।"
+          },
+          "interaction": "Drag each fuel-drum icon (two objects) along the floor plane to a marked 'safe storage' zone at least 10 m away, and drag a fire-blanket icon over the welding spark zone -- all within 15 seconds.",
+          "correct_outcome": {
+            "en": "Drums relocated and area shielded in time. Popup: 'Correct -- hot work isolated from flammable storage. Welding must never be done within a safe distance of fuel or flammable liquids.'",
+            "hi": "समय पर ड्रम हटाए और क्षेत्र को ढका गया। पॉपअप: 'सही -- हॉट वर्क को ज्वलनशील भंडारण से अलग किया गया। ईंधन या ज्वलनशील तरल पदार्थों के पास वेल्डिंग कभी नहीं करनी चाहिए।'"
+          },
+          "incorrect_outcome": {
+            "en": "Task incomplete in time. Alarm popup: 'Drum ignites -- simulated explosion. Hot work near fuel storage has caused fatal explosions in industrial workshops.'",
+            "hi": "समय पर कार्य पूरा नहीं हुआ। अलार्म पॉपअप: 'ड्रम में आग लगी -- अनुकरणित विस्फोट। ईंधन भंडारण के पास हॉट वर्क से औद्योगिक वर्कशॉप में घातक विस्फोट हो चुके हैं।'"
+          },
+          "ar_feasibility": null
+        },
+        {
+          "question_id": "MOD01_Q05",
+          "hazard_type": "blocked_extinguisher_exit",
+          "action_type": "drag_clear_obstruction",
+          "scenario_title": {
+            "en": "Blocked Fire Extinguisher & Exit Path",
+            "hi": "अवरुद्ध अग्निशामक यंत्र एवं निकास मार्ग"
+          },
+          "environment_conditions": [
+            {
+              "condition": "CLUTTERED_AREA",
+              "reasoning": "Storage/workshop clutter is the direct trigger -- object detection flags many items blocking a path."
+            },
+            {
+              "condition": "OPEN_INDOOR_FLOOR",
+              "reasoning": "Corridors and shop floors are open horizontal planes suited to path-blocking hazards."
+            }
+          ],
+          "hazard_description": {
+            "en": "Crates and loose material (rendered on top of detected clutter) block a marked exit path and hide a wall-mounted extinguisher icon.",
+            "hi": "क्रेट और ढीला सामान (पहचानी गई अव्यवस्था के ऊपर दिखाया गया) एक चिह्नित निकास मार्ग को अवरुद्ध कर रहा है और दीवार पर लगे अग्निशामक यंत्र आइकन को छुपा रहा है।"
+          },
+          "interaction": "Drag three obstruction icons off the marked exit path/extinguisher zone, one at a time, within 15 seconds.",
+          "correct_outcome": {
+            "en": "Path and extinguisher cleared. Popup: 'Correct -- emergency access restored. Blocked exits and extinguishers cost critical seconds during a real fire.'",
+            "hi": "मार्ग और अग्निशामक साफ किए गए। पॉपअप: 'सही -- आपातकालीन पहुंच बहाल हुई। अवरुद्ध निकास और अग्निशामक असली आग के दौरान महत्वपूर्ण सेकंड बर्बाद करते हैं।'"
+          },
+          "incorrect_outcome": {
+            "en": "Not cleared in time. Alarm popup: 'Exit remains blocked -- simulated evacuation delay. Obstructed emergency exits are a leading factor in fire-related casualties.'",
+            "hi": "समय पर साफ नहीं हुआ। अलार्म पॉपअप: 'निकास अवरुद्ध रहा -- अनुकरणित निकासी में देरी। अवरुद्ध आपातकालीन निकास आग से संबंधित मौतों का एक प्रमुख कारण है।'"
+          },
+          "ar_feasibility": null
+        },
+        {
+          "question_id": "MOD01_Q06",
+          "hazard_type": "overheating_conveyor_motor",
+          "action_type": "swipe_emergency_stop",
+          "scenario_title": {
+            "en": "Overheating Conveyor Belt Motor",
+            "hi": "अत्यधिक गर्म होती कन्वेयर बेल्ट मोटर"
+          },
+          "environment_conditions": [
+            {
+              "condition": "NEAR_DETECTED_MACHINERY_FLOOR",
+              "reasoning": "Conveyor/belt drive units are recognisable machine-shaped objects."
+            },
+            {
+              "condition": "CONFINED_SPACE_LOW_LIGHT",
+              "reasoning": "Belt drive housings are often in enclosed transfer points with limited light."
+            }
+          ],
+          "hazard_description": {
+            "en": "A heat-shimmer and rising smoke overlay appears at a motor/roller point on or beside the detected machine object, with a rising temperature gauge.",
+            "hi": "पहचाने गए मशीन ऑब्जेक्ट पर या उसके बगल में मोटर/रोलर पॉइंट पर गर्मी की लहर और उठता धुआं दिखाई देता है, साथ ही बढ़ता तापमान गेज।"
+          },
+          "interaction": "Perform a downward swipe on the virtual emergency-stop pull-cord/lever icon before the gauge reaches maximum (7-second window).",
+          "correct_outcome": {
+            "en": "Belt stopped in time. Popup: 'Correct -- motor stopped before overheating ignited dust. Friction heat on belt drives is a known source of coal dust fires.'",
+            "hi": "समय पर बेल्ट रोकी गई। पॉपअप: 'सही -- अत्यधिक गर्मी से धूल जलने से पहले मोटर रोक दी गई। बेल्ट ड्राइव पर घर्षण से गर्मी कोयला धूल में आग लगने का एक जाना-पहचाना कारण है।'"
+          },
+          "incorrect_outcome": {
+            "en": "Gauge maxes out. Alarm popup: 'Motor ignites surrounding dust -- simulated fire. Unmonitored belt-drive overheating has caused several coal-handling plant fires.'",
+            "hi": "गेज अधिकतम हुआ। अलार्म पॉपअप: 'मोटर के आसपास की धूल में आग लगी -- अनुकरणित आग। बिना निगरानी के बेल्ट-ड्राइव का अत्यधिक गर्म होना कई कोयला हैंडलिंग प्लांट आग का कारण बना है।'"
+          },
+          "ar_feasibility": null
+        },
+        {
+          "question_id": "MOD01_Q07",
+          "hazard_type": "static_discharge_dust_transfer",
+          "action_type": "tap_attach_bonding_clamp",
+          "scenario_title": {
+            "en": "Static Discharge During Dust Transfer",
+            "hi": "धूल स्थानांतरण के दौरान स्थैतिक बिजली निर्वहन"
+          },
+          "environment_conditions": [
+            {
+              "condition": "CONFINED_SPACE_LOW_LIGHT",
+              "reasoning": "Dust-transfer bins/hoppers are enclosed spaces."
+            },
+            {
+              "condition": "NEAR_DETECTED_MACHINERY_FLOOR",
+              "reasoning": "Hoppers/bins register as machine-like detected objects."
+            }
+          ],
+          "hazard_description": {
+            "en": "A small blue spark arcs between two container icons overlaid on detected equipment as fine powder is shown pouring between them.",
+            "hi": "पहचाने गए उपकरण पर दिखाए गए दो कंटेनर आइकनों के बीच एक छोटी नीली चिंगारी उठती है, जबकि उनके बीच महीन पाउडर डाला जा रहा दिखाया गया है।"
+          },
+          "interaction": "Tap a bonding-clamp icon and drag it to connect both container icons (single continuous drag between two points) before the pour completes (6-second window).",
+          "correct_outcome": {
+            "en": "Bonding connected in time. Popup: 'Correct -- containers bonded before transfer. Bonding/grounding prevents static build-up during flammable powder transfer.'",
+            "hi": "समय पर बॉन्डिंग जोड़ी गई। पॉपअप: 'सही -- स्थानांतरण से पहले कंटेनर बॉन्ड किए गए। बॉन्डिंग/ग्राउंडिंग ज्वलनशील पाउडर स्थानांतरण के दौरान स्थैतिक बिजली जमा होने से रोकती है।'"
+          },
+          "incorrect_outcome": {
+            "en": "Not bonded in time. Alarm popup: 'Static spark ignites dust cloud -- simulated flash fire. Unbonded transfer of fine combustible powder is a known static-ignition hazard.'",
+            "hi": "समय पर बॉन्ड नहीं हुआ। अलार्म पॉपअप: 'स्थैतिक चिंगारी से धूल के बादल में आग -- अनुकरणित फ्लैश फायर। महीन ज्वलनशील पाउडर का बिना बॉन्डिंग स्थानांतरण एक ज्ञात स्थैतिक-प्रज्वलन खतरा है।'"
+          },
+          "ar_feasibility": {
+            "issue": "Continuous two-point drag is a simple touchscreen interaction; only becomes a dependency if implemented as a true freehand pinch-and-connect gesture.",
+            "min_requirement": "None for the touchscreen version; a hand-tracking SDK is only needed if a freehand gesture mode is desired."
+          }
+        },
+        {
+          "question_id": "MOD01_Q08",
+          "hazard_type": "smoking_in_stockyard",
+          "action_type": "tap_confiscate_drag_sign",
+          "scenario_title": {
+            "en": "Smoking in Coal Stockyard No-Smoking Zone",
+            "hi": "कोयला स्टॉकयार्ड धूम्रपान-निषेध क्षेत्र में धूम्रपान"
+          },
+          "environment_conditions": [
+            {
+              "condition": "OPEN_OUTDOOR_BRIGHT",
+              "reasoning": "Coal stockyards are large open outdoor areas with bright ambient light."
+            },
+            {
+              "condition": "CLUTTERED_AREA",
+              "reasoning": "Stockpiles and equipment register as clutter to object detection."
+            }
+          ],
+          "hazard_description": {
+            "en": "A worker figure holds a lit cigarette beside coal stockpile material, with drifting smoke and a 'No Smoking' sign icon lying fallen on the ground nearby.",
+            "hi": "एक कर्मचारी आकृति कोयले के ढेर के पास जलती सिगरेट पकड़े है, धुआं फैल रहा है, और पास में 'धूम्रपान निषेध' का बोर्ड ज़मीन पर गिरा हुआ पड़ा है।"
+          },
+          "interaction": "Tap the cigarette to extinguish/confiscate it, then drag the fallen 'No Smoking' sign icon upright into its marked post position, within 12 seconds.",
+          "correct_outcome": {
+            "en": "Both actions completed. Popup: 'Correct -- ignition source removed and signage restored. Naked flames of any kind are strictly prohibited near coal stockpiles.'",
+            "hi": "दोनों कार्य पूरे हुए। पॉपअप: 'सही -- प्रज्वलन स्रोत हटाया गया और साइनेज बहाल किया गया। कोयले के ढेर के पास किसी भी प्रकार की खुली लौ पूरी तरह वर्जित है।'"
+          },
+          "incorrect_outcome": {
+            "en": "Not completed in time. Alarm popup: 'Cigarette ignites coal dust -- simulated stockpile fire. Coal stockyard fires from careless ignition sources are a recurring incident type.'",
+            "hi": "समय पर पूरा नहीं हुआ। अलार्म पॉपअप: 'सिगरेट से कोयला धूल में आग -- अनुकरणित स्टॉकपाइल आग। लापरवाह प्रज्वलन स्रोतों से कोयला स्टॉकयार्ड में आग एक बार-बार होने वाली घटना है।'"
+          },
+          "ar_feasibility": null
+        },
+        {
+          "question_id": "MOD01_Q09",
+          "hazard_type": "lpg_cylinder_leak",
+          "action_type": "rotate_valve_then_swipe_ventilate",
+          "scenario_title": {
+            "en": "LPG Cylinder Leak in Canteen/Workshop",
+            "hi": "कैंटीन/वर्कशॉप में एलपीजी सिलेंडर रिसाव"
+          },
+          "environment_conditions": [
+            {
+              "condition": "OPEN_INDOOR_FLOOR",
+              "reasoning": "Canteens and small workshop rooms are indoor floor spaces."
+            },
+            {
+              "condition": "CLUTTERED_AREA",
+              "reasoning": "Kitchen/workshop storage areas naturally register as cluttered."
+            }
+          ],
+          "hazard_description": {
+            "en": "A gas-cylinder icon on the floor shows a hissing-gas particle effect at its valve, with a faint haze accumulating near the floor.",
+            "hi": "फर्श पर एक गैस सिलेंडर आइकन की वाल्व से फुसफुसाती गैस का प्रभाव दिखाई देता है, फर्श के पास हल्की धुंध जमा हो रही है।"
+          },
+          "interaction": "Perform a circular rotate gesture (finger drag in a clockwise arc, min. 270 degrees) on the valve icon to shut it, then swipe upward on a window/vent icon to ventilate -- within 12 seconds total.",
+          "correct_outcome": {
+            "en": "Valve closed and area ventilated in time. Popup: 'Correct -- leak stopped and space ventilated. LPG is heavier than air and pools at floor level, raising explosion risk in enclosed rooms.'",
+            "hi": "समय पर वाल्व बंद और क्षेत्र हवादार किया गया। पॉपअप: 'सही -- रिसाव रोका गया और जगह हवादार की गई। एलपीजी हवा से भारी होती है और बंद कमरों में फर्श स्तर पर जमा होकर विस्फोट का खतरा बढ़ाती है।'"
+          },
+          "incorrect_outcome": {
+            "en": "Not completed in time. Alarm popup: 'Gas concentration reaches ignition range -- simulated explosion. Undetected LPG leaks in enclosed rooms are a recurring cause of workplace explosions.'",
+            "hi": "समय पर पूरा नहीं हुआ। अलार्म पॉपअप: 'गैस सांद्रता प्रज्वलन सीमा तक पहुंची -- अनुकरणित विस्फोट। बंद कमरों में अनदेखे एलपीजी रिसाव कार्यस्थल विस्फोटों का एक बार-बार होने वाला कारण है।'"
+          },
+          "ar_feasibility": {
+            "issue": "A 270-degree circular drag for valve rotation is implementable as a 2D touchscreen gesture; a true 3D hand-rotation gesture would need hand-tracking.",
+            "min_requirement": "None for the touchscreen version; hand-tracking SDK only if a freehand twist gesture is required for realism."
+          }
+        },
+        {
+          "question_id": "MOD01_Q10",
+          "hazard_type": "improper_explosive_storage",
+          "action_type": "drag_to_safe_storage",
+          "scenario_title": {
+            "en": "Explosives Stored Near Heat Source at Blasting Site",
+            "hi": "ब्लास्टिंग स्थल पर गर्मी स्रोत के पास विस्फोटक भंडारण"
+          },
+          "environment_conditions": [
+            {
+              "condition": "OPEN_OUTDOOR_BRIGHT",
+              "reasoning": "Opencast mine blasting/magazine areas are open outdoor sites."
+            },
+            {
+              "condition": "NEAR_DETECTED_MACHINERY_FLOOR",
+              "reasoning": "Blasting sites are typically near drilling/loading machinery."
+            }
+          ],
+          "hazard_description": {
+            "en": "A detonator-box icon sits close to a rendered heat-source (idle running engine/exhaust) icon; a countdown risk indicator pulses above it.",
+            "hi": "एक डेटोनेटर बॉक्स आइकन एक दिखाए गए गर्मी स्रोत (चलते इंजन/एग्ज़ॉस्ट) आइकन के पास रखा है; उसके ऊपर एक काउंटडाउन जोखिम संकेतक झपक रहा है।"
+          },
+          "interaction": "Drag the detonator-box icon from its unsafe position to a marked 'authorised magazine/safe storage' zone at least 15 m from the heat source, within 15 seconds.",
+          "correct_outcome": {
+            "en": "Relocated in time. Popup: 'Correct -- explosives moved to authorised safe storage. Detonators must always be stored away from heat, sparks, and general blasting materials per statutory distance norms.'",
+            "hi": "समय पर स्थानांतरित किया गया। पॉपअप: 'सही -- विस्फोटक अधिकृत सुरक्षित भंडारण में ले जाए गए। डेटोनेटर हमेशा गर्मी, चिंगारी और अन्य ब्लास्टिंग सामग्री से वैधानिक दूरी मानकों के अनुसार दूर रखे जाने चाहिए।'"
+          },
+          "incorrect_outcome": {
+            "en": "Not relocated in time. Alarm popup: 'Heat triggers simulated detonation. Improper explosive storage near ignition sources has caused fatal blasting-site accidents.'",
+            "hi": "समय पर स्थानांतरित नहीं हुआ। अलार्म पॉपअप: 'गर्मी से अनुकरणित विस्फोट। प्रज्वलन स्रोतों के पास अनुचित विस्फोटक भंडारण से घातक ब्लास्टिंग-स्थल दुर्घटनाएं हो चुकी हैं।'"
+          },
+          "ar_feasibility": null
+        }
+      ]
+    },
+    {
+      "module_id": "MOD02_FALL_COLLAPSE_HEIGHT",
+      "module_name": {
+        "en": "Fall, Roof Collapse & Working-at-Height Hazard Response",
+        "hi": "गिरना, छत धंसना एवं ऊंचाई पर कार्य खतरा प्रतिक्रिया"
+      },
+      "hazard_category": "Fall, Structural Collapse & Working-at-Height Hazards",
+      "relevance": "Roof/side fall (strata failure) is the single largest cause of underground coal-mine fatalities in India per DGMS statistics; opencast mine bench instability and unguarded heights in steel/manufacturing plants add fall-from-height risk.",
+      "scan_instruction": {
+        "en": "Scan the floor, any edges or drops, and overhead surfaces around you.",
+        "hi": "अपने आस-पास के फर्श, किसी भी किनारे या गिरावट, और ऊपरी सतहों को स्कैन करें।"
+      },
+      "items": [
+        {
+          "question_id": "MOD02_Q01",
+          "hazard_type": "unsupported_roof_strata",
+          "action_type": "tap_hold_install_support",
+          "scenario_title": {
+            "en": "Cracked, Unsupported Roof in Underground Gallery",
+            "hi": "भूमिगत सुरंग में दरार वाली, असमर्थित छत"
+          },
+          "environment_conditions": [
+            {
+              "condition": "CONFINED_SPACE_LOW_LIGHT",
+              "reasoning": "Underground galleries are enclosed, dim spaces where roof detection applies to the ceiling plane."
+            },
+            {
+              "condition": "NARROW_PASSAGE",
+              "reasoning": "Roadways/galleries are narrow with close overhead planes."
+            }
+          ],
+          "hazard_description": {
+            "en": "Crack lines and small falling-debris particles are overlaid on the detected ceiling/upper plane, with a weak-point marker.",
+            "hi": "पहचानी गई छत/ऊपरी सतह पर दरार की रेखाएं और छोटे गिरते मलबे के कण दिखाई देते हैं, साथ ही एक कमज़ोर-बिंदु मार्कर।"
+          },
+          "interaction": "Tap-and-hold a roof-bolt/prop icon at the marked weak point for 3 seconds to install support before the 10-second collapse countdown ends.",
+          "correct_outcome": {
+            "en": "Support installed in time. Popup: 'Correct -- roof secured before collapse. Systematic roof bolting/support is mandatory wherever strata show cracking.'",
+            "hi": "समय पर सपोर्ट लगाया गया। पॉपअप: 'सही -- धंसने से पहले छत सुरक्षित की गई। जहां भी स्ट्रेटा में दरारें दिखें वहां व्यवस्थित रूफ बोल्टिंग/सपोर्ट अनिवार्य है।'"
+          },
+          "incorrect_outcome": {
+            "en": "Timer expires. Alarm popup: 'Roof collapses -- simulated strata fall. Roof/side fall is the single largest cause of underground coal-mine deaths in India.'",
+            "hi": "समय समाप्त। अलार्म पॉपअप: 'छत धंस गई -- अनुकरणित स्ट्रेटा फॉल। भारत में भूमिगत कोयला खदान मौतों का सबसे बड़ा कारण छत/साइड फॉल है।'"
+          },
+          "ar_feasibility": {
+            "issue": "Requires reliable detection of an overhead/ceiling plane, which mobile AR handles less consistently than floor planes -- especially in the low light typical of underground settings.",
+            "min_requirement": "Extended vertical/ceiling plane detection tuned for low light; supplementary-lighting recommendation to the trainee if the ceiling plane fails to register."
+          }
+        },
+        {
+          "question_id": "MOD02_Q02",
+          "hazard_type": "unbarricaded_open_shaft",
+          "action_type": "drag_barricade_or_cover",
+          "scenario_title": {
+            "en": "Unbarricaded Open Shaft/Floor Opening",
+            "hi": "बिना बैरिकेड खुला शाफ्ट/फर्श का छिद्र"
+          },
+          "environment_conditions": [
+            {
+              "condition": "OPEN_INDOOR_FLOOR",
+              "reasoning": "A clear floor plane is needed to place a convincing floor-opening overlay."
+            },
+            {
+              "condition": "ELEVATED_PLATFORM_EDGE",
+              "reasoning": "A genuine plane-edge/discontinuity detection is the most realistic trigger for an opening hazard."
+            }
+          ],
+          "hazard_description": {
+            "en": "A dark circular opening overlay appears on the detected floor with no barricade tape or cover around it.",
+            "hi": "पहचाने गए फर्श पर एक गहरा गोलाकार छिद्र दिखाई देता है, जिसके चारों ओर कोई बैरिकेड टेप या ढक्कन नहीं है।"
+          },
+          "interaction": "Drag a barricade-tape icon in a loop around the opening (minimum 3 anchor points), or drag a floor-cover icon directly over it, within 15 seconds.",
+          "correct_outcome": {
+            "en": "Barricaded/covered in time. Popup: 'Correct -- opening secured. Unbarricaded shafts and floor openings are a frequent cause of fatal falls in mines and plants.'",
+            "hi": "समय पर बैरिकेड/ढका गया। पॉपअप: 'सही -- छिद्र सुरक्षित किया गया। बिना बैरिकेड शाफ्ट और फर्श के छिद्र खदानों और संयंत्रों में घातक गिरावट का एक सामान्य कारण हैं।'"
+          },
+          "incorrect_outcome": {
+            "en": "Not secured in time. Alarm popup: 'Simulated fall into opening. Unmarked floor openings have caused fatal falls during routine movement in work areas.'",
+            "hi": "समय पर सुरक्षित नहीं किया गया। अलार्म पॉपअप: 'छिद्र में अनुकरणित गिरावट। अचिह्नित फर्श छिद्रों से कार्य क्षेत्रों में सामान्य आवागमन के दौरान घातक गिरावट हुई है।'"
+          },
+          "ar_feasibility": null
+        },
+        {
+          "question_id": "MOD02_Q03",
+          "hazard_type": "no_harness_on_platform",
+          "action_type": "drag_attach_lanyard",
+          "scenario_title": {
+            "en": "Worker on Elevated Platform Without Harness",
+            "hi": "बिना हार्नेस ऊंचे प्लेटफॉर्म पर कर्मचारी"
+          },
+          "environment_conditions": [
+            {
+              "condition": "ELEVATED_PLATFORM_EDGE",
+              "reasoning": "An elevated plane with a detected edge best represents a platform/scaffold."
+            },
+            {
+              "condition": "VERTICAL_SURFACE_WITH_MACHINERY_OBJECTS",
+              "reasoning": "Platforms are usually adjacent to plant/machinery structures."
+            }
+          ],
+          "hazard_description": {
+            "en": "A worker figure stands near a platform edge with a dangling, unattached harness lanyard and a visible anchor point nearby.",
+            "hi": "एक कर्मचारी आकृति प्लेटफॉर्म के किनारे के पास खड़ी है, हार्नेस की लटकती हुई, बिना जुड़ी हुई लैनयार्ड और पास में एक दिखाई देने वाला एंकर पॉइंट है।"
+          },
+          "interaction": "Drag the loose lanyard-hook icon to snap onto the marked anchor-point icon before the worker figure steps toward the edge (7-second window).",
+          "correct_outcome": {
+            "en": "Lanyard attached in time. Popup: 'Correct -- fall arrest secured before working at height. A harness must be anchored before, not after, approaching an unguarded edge.'",
+            "hi": "समय पर लैनयार्ड जोड़ी गई। पॉपअप: 'सही -- ऊंचाई पर काम करने से पहले फॉल अरेस्ट सुरक्षित किया गया। बिना गार्ड वाले किनारे के पास जाने से पहले हार्नेस को एंकर किया जाना चाहिए, बाद में नहीं।'"
+          },
+          "incorrect_outcome": {
+            "en": "Not attached in time. Alarm popup: 'Simulated fall from height. Falls from unguarded platforms/scaffolds without fall-arrest equipment are a major cause of injury in manufacturing plants.'",
+            "hi": "समय पर नहीं जुड़ी। अलार्म पॉपअप: 'ऊंचाई से अनुकरणित गिरावट। फॉल-अरेस्ट उपकरण के बिना बिना गार्ड वाले प्लेटफॉर्म/स्कैफोल्ड से गिरना विनिर्माण संयंत्रों में चोट का एक प्रमुख कारण है।'"
+          },
+          "ar_feasibility": null
+        },
+        {
+          "question_id": "MOD02_Q04",
+          "hazard_type": "unstable_ladder_angle",
+          "action_type": "drag_rotate_ladder",
+          "scenario_title": {
+            "en": "Ladder Placed at Unsafe Angle",
+            "hi": "असुरक्षित कोण पर रखी सीढ़ी"
+          },
+          "environment_conditions": [
+            {
+              "condition": "BLANK_VERTICAL_SURFACE",
+              "reasoning": "A clear vertical wall plane is needed to lean a ladder against."
+            },
+            {
+              "condition": "CLUTTERED_AREA",
+              "reasoning": "Ladders are often placed in busy maintenance/storage areas."
+            }
+          ],
+          "hazard_description": {
+            "en": "A ladder icon leans against the detected vertical surface at a visibly steep/shallow angle, with an unstable-wobble animation.",
+            "hi": "पहचानी गई खड़ी सतह पर एक सीढ़ी आइकन स्पष्ट रूप से तीखे/उथले कोण पर टिकी है, साथ ही एक अस्थिर-हिलने वाला एनिमेशन।"
+          },
+          "interaction": "Drag the base of the ladder icon along the floor plane (or rotate via a rotate-handle) until it snaps into the correct ~75-degree angle guide, within 10 seconds.",
+          "correct_outcome": {
+            "en": "Correct angle achieved. Popup: 'Correct -- ladder stabilised at a safe angle. The 4:1 rule (75 degrees) prevents slip-out and backward-fall ladder accidents.'",
+            "hi": "सही कोण प्राप्त हुआ। पॉपअप: 'सही -- सीढ़ी सुरक्षित कोण पर स्थिर की गई। 4:1 नियम (75°) फिसलने और पीछे गिरने वाली सीढ़ी दुर्घटनाओं को रोकता है।'"
+          },
+          "incorrect_outcome": {
+            "en": "Not corrected in time. Alarm popup: 'Ladder slips -- simulated fall. Incorrectly angled ladders are a common cause of fall injuries during maintenance work.'",
+            "hi": "समय पर सुधार नहीं हुआ। अलार्म पॉपअप: 'सीढ़ी फिसली -- अनुकरणित गिरावट। गलत कोण वाली सीढ़ियां रखरखाव कार्य के दौरान गिरने की चोटों का एक सामान्य कारण हैं।'"
+          },
+          "ar_feasibility": null
+        },
+        {
+          "question_id": "MOD02_Q05",
+          "hazard_type": "unstable_bench_edge",
+          "action_type": "physical_move_back",
+          "scenario_title": {
+            "en": "Crumbling Bench Edge at Opencast Mine Face",
+            "hi": "ओपनकास्ट खदान फेस पर टूटता बेंच किनारा"
+          },
+          "environment_conditions": [
+            {
+              "condition": "OPEN_OUTDOOR_BRIGHT",
+              "reasoning": "Opencast mine benches are large open outdoor surfaces."
+            },
+            {
+              "condition": "ELEVATED_PLATFORM_EDGE",
+              "reasoning": "A detected plane edge is required to represent the bench drop-off."
+            }
+          ],
+          "hazard_description": {
+            "en": "Small rock/soil particles visibly crumble and fall from the detected edge as the trainee's camera nears it, with a widening crack overlay.",
+            "hi": "जैसे ही ट्रेनी का कैमरा पहचाने गए किनारे के पास आता है, छोटे पत्थर/मिट्टी के कण दिखाई देकर गिरते हैं, साथ ही चौड़ी होती दरार का ओवरले।"
+          },
+          "interaction": "Trainee must physically step back (tracked via device position) to a marked safe-distance line at least 2 m from the edge, within 8 seconds.",
+          "correct_outcome": {
+            "en": "Stepped back in time. Popup: 'Correct -- retreated before edge failure. Unstable bench edges in opencast mines can collapse without warning.'",
+            "hi": "समय पर पीछे हटे। पॉपअप: 'सही -- किनारा टूटने से पहले पीछे हट गए। ओपनकास्ट खदानों में अस्थिर बेंच किनारे बिना चेतावनी के धंस सकते हैं।'"
+          },
+          "incorrect_outcome": {
+            "en": "Did not retreat in time. Alarm popup: 'Edge collapses -- simulated fall. Bench/slope failures at opencast faces are a recurring cause of fatal falls and burial.'",
+            "hi": "समय पर नहीं हटे। अलार्म पॉपअप: 'किनारा धंसा -- अनुकरणित गिरावट। ओपनकास्ट फेस पर बेंच/ढलान विफलता घातक गिरावट और दबने का एक बार-बार होने वाला कारण है।'"
+          },
+          "ar_feasibility": {
+            "issue": "Requires the app to reliably detect a real plane-edge/discontinuity in the scanned environment to place this hazard convincingly.",
+            "min_requirement": "Robust edge/boundary detection from the plane-detection API; falls back to a virtual edge marker if no real edge is present."
+          }
+        },
+        {
+          "question_id": "MOD02_Q06",
+          "hazard_type": "uncovered_floor_opening_maintenance",
+          "action_type": "drag_cover_into_place",
+          "scenario_title": {
+            "en": "Uncovered Floor Grating During Maintenance",
+            "hi": "रखरखाव के दौरान बिना ढकी फर्श की जाली"
+          },
+          "environment_conditions": [
+            {
+              "condition": "CLUTTERED_AREA",
+              "reasoning": "Maintenance zones with tools/parts register as cluttered."
+            },
+            {
+              "condition": "OPEN_INDOOR_FLOOR",
+              "reasoning": "Factory floors provide the flat plane for a grating opening."
+            }
+          ],
+          "hazard_description": {
+            "en": "A section of floor grating is shown removed and leaning aside, exposing a dark opening on the detected floor plane.",
+            "hi": "फर्श की जाली का एक हिस्सा हटाकर एक तरफ झुका हुआ दिखाया गया है, जिससे पहचाने गए फर्श तल पर एक गहरा छिद्र उजागर हो गया है।"
+          },
+          "interaction": "Drag the grating-cover icon from its leaning position back over the opening until it snaps into place, within 10 seconds.",
+          "correct_outcome": {
+            "en": "Cover replaced in time. Popup: 'Correct -- opening covered before anyone could step in. Grating must be replaced or barricaded immediately after maintenance work.'",
+            "hi": "समय पर ढक्कन बदला गया। पॉपअप: 'सही -- किसी के गिरने से पहले छिद्र ढका गया। रखरखाव कार्य के तुरंत बाद जाली को बदला या बैरिकेड किया जाना चाहिए।'"
+          },
+          "incorrect_outcome": {
+            "en": "Not covered in time. Alarm popup: 'Simulated fall through open grating. Left-open floor gratings are a preventable but recurring cause of plant-floor falls.'",
+            "hi": "समय पर नहीं ढका गया। अलार्म पॉपअप: 'खुली जाली से अनुकरणित गिरावट। खुली छोड़ी गई फर्श की जालियां संयंत्र-फर्श गिरावट का एक रोके जाने योग्य लेकिन बार-बार होने वाला कारण हैं।'"
+          },
+          "ar_feasibility": null
+        },
+        {
+          "question_id": "MOD02_Q07",
+          "hazard_type": "falling_object_no_toeboard",
+          "action_type": "tap_hold_install_toeboard",
+          "scenario_title": {
+            "en": "Stacked Material Without Toe-Board at Edge",
+            "hi": "किनारे पर बिना टो-बोर्ड के रखी सामग्री"
+          },
+          "environment_conditions": [
+            {
+              "condition": "ELEVATED_PLATFORM_EDGE",
+              "reasoning": "A raised plane edge represents the storage-platform boundary."
+            },
+            {
+              "condition": "CLUTTERED_AREA",
+              "reasoning": "Stacked material is detected as clutter on the elevated surface."
+            }
+          ],
+          "hazard_description": {
+            "en": "Crates are stacked near the detected edge of a raised plane with no toe-board/net; one crate icon visibly teeters.",
+            "hi": "पहचाने गए ऊंचे तल के किनारे के पास बिना टो-बोर्ड/जाल के क्रेट रखे हैं; एक क्रेट आइकन स्पष्ट रूप से डगमगा रहा है।"
+          },
+          "interaction": "Tap-and-hold a toe-board/net icon at the edge for 3 seconds to install it before the teetering crate falls (8-second window).",
+          "correct_outcome": {
+            "en": "Installed in time. Popup: 'Correct -- falling-object barrier installed. Toe-boards/nets prevent stacked material from falling onto people working below.'",
+            "hi": "समय पर लगाया गया। पॉपअप: 'सही -- गिरती वस्तु के लिए बैरियर लगाया गया। टो-बोर्ड/जाल नीचे काम कर रहे लोगों पर स्टैक की गई सामग्री को गिरने से रोकते हैं।'"
+          },
+          "incorrect_outcome": {
+            "en": "Timer expires. Alarm popup: 'Crate falls -- simulated struck-by injury below. Unrestrained stacked material at height is a common struck-by-object hazard.'",
+            "hi": "समय समाप्त। अलार्म पॉपअप: 'क्रेट गिरा -- नीचे अनुकरणित चोट। ऊंचाई पर बिना रोक-टोक के रखी सामग्री एक सामान्य गिरती वस्तु से चोट का खतरा है।'"
+          },
+          "ar_feasibility": null
+        },
+        {
+          "question_id": "MOD02_Q08",
+          "hazard_type": "climbing_crates_instead_of_ladder",
+          "action_type": "drag_correct_ladder_to_location",
+          "scenario_title": {
+            "en": "Worker Climbing Stacked Crates Instead of Ladder",
+            "hi": "सीढ़ी की जगह ढेर किए क्रेट पर चढ़ता कर्मचारी"
+          },
+          "environment_conditions": [
+            {
+              "condition": "CLUTTERED_AREA",
+              "reasoning": "Stacked crates registering as clutter is the direct trigger."
+            },
+            {
+              "condition": "OPEN_INDOOR_FLOOR",
+              "reasoning": "Requires floor space to place both the crates and the correct ladder."
+            }
+          ],
+          "hazard_description": {
+            "en": "A worker figure has one foot on a stack of crates, reaching upward; a proper ladder icon lies unused nearby on the floor.",
+            "hi": "एक कर्मचारी आकृति का एक पैर क्रेट के ढेर पर है, ऊपर की ओर पहुंच रहा है; पास में फर्श पर एक उचित सीढ़ी आइकन बिना उपयोग के पड़ी है।"
+          },
+          "interaction": "Drag the ladder icon from the floor to the correct position beside the worker figure before the worker's climb animation completes (7-second window).",
+          "correct_outcome": {
+            "en": "Ladder positioned in time. Popup: 'Correct -- worker redirected to proper access equipment. Climbing on stacked material instead of a ladder is a frequent cause of fall injuries.'",
+            "hi": "समय पर सीढ़ी रखी गई। पॉपअप: 'सही -- कर्मचारी को उचित पहुंच उपकरण की ओर पुनर्निर्देशित किया गया। सीढ़ी की जगह ढेर की गई सामग्री पर चढ़ना गिरने की चोटों का एक सामान्य कारण है।'"
+          },
+          "incorrect_outcome": {
+            "en": "Not repositioned in time. Alarm popup: 'Crate stack topples -- simulated fall. Improvised climbing surfaces are unstable and a well-documented cause of workplace falls.'",
+            "hi": "समय पर पुनःस्थापित नहीं हुआ। अलार्म पॉपअप: 'क्रेट का ढेर गिरा -- अनुकरणित गिरावट। तात्कालिक चढ़ाई सतहें अस्थिर होती हैं और कार्यस्थल गिरावट का एक सुविख्यात कारण हैं।'"
+          },
+          "ar_feasibility": null
+        },
+        {
+          "question_id": "MOD02_Q09",
+          "hazard_type": "slippery_floor_no_signage",
+          "action_type": "drag_sign_and_mat",
+          "scenario_title": {
+            "en": "Wet Slippery Floor Without Warning Signage",
+            "hi": "बिना चेतावनी संकेत के गीला फिसलन भरा फर्श"
+          },
+          "environment_conditions": [
+            {
+              "condition": "OPEN_INDOOR_FLOOR",
+              "reasoning": "Processing/washery floors are open indoor plane areas."
+            },
+            {
+              "condition": "NEAR_DETECTED_MACHINERY_FLOOR",
+              "reasoning": "Washery/processing plant floors are near detected processing machinery."
+            }
+          ],
+          "hazard_description": {
+            "en": "A reflective wet-patch overlay appears on the detected floor with a worker figure approaching it and no warning sign present.",
+            "hi": "पहचाने गए फर्श पर एक चमकदार गीला-धब्बा दिखाई देता है, एक कर्मचारी आकृति उसकी ओर बढ़ रही है और कोई चेतावनी संकेत मौजूद नहीं है।"
+          },
+          "interaction": "Drag a 'Wet Floor' warning-sign icon and an absorbent-mat icon onto the wet patch before the approaching worker figure reaches it (8-second window).",
+          "correct_outcome": {
+            "en": "Both placed in time. Popup: 'Correct -- hazard marked and mitigated before the worker reached it. Wet-floor signage and matting are basic, effective slip-prevention measures.'",
+            "hi": "दोनों समय पर रखे गए। पॉपअप: 'सही -- कर्मचारी के वहां पहुंचने से पहले खतरे को चिह्नित और कम किया गया। गीला-फर्श संकेत और मैटिंग बुनियादी, प्रभावी फिसलन-रोकथाम उपाय हैं।'"
+          },
+          "incorrect_outcome": {
+            "en": "Not placed in time. Alarm popup: 'Worker slips -- simulated fall injury. Slips on unmarked wet processing-plant floors are among the most common workplace injuries.'",
+            "hi": "समय पर नहीं रखा गया। अलार्म पॉपअप: 'कर्मचारी फिसला -- अनुकरणित गिरावट चोट। बिना चिह्नित गीले प्रोसेसिंग-प्लांट फर्श पर फिसलना सबसे सामान्य कार्यस्थल चोटों में से एक है।'"
+          },
+          "ar_feasibility": null
+        },
+        {
+          "question_id": "MOD02_Q10",
+          "hazard_type": "suspended_load_over_walkway",
+          "action_type": "swipe_signal_and_drag_figure",
+          "scenario_title": {
+            "en": "Suspended Crane Load Swinging Over Walkway",
+            "hi": "पैदल मार्ग के ऊपर झूलता क्रेन का लोड"
+          },
+          "environment_conditions": [
+            {
+              "condition": "OPEN_INDOOR_FLOOR",
+              "reasoning": "Fabrication/steel plant shop floors provide the walkway plane."
+            },
+            {
+              "condition": "NEAR_DETECTED_MACHINERY_FLOOR",
+              "reasoning": "Overhead crane structures are near detected heavy machinery."
+            }
+          ],
+          "hazard_description": {
+            "en": "An overhead load icon swings above a walkway path where a worker figure is walking underneath, with a swing-arc warning zone shown.",
+            "hi": "एक ऊपरी लोड आइकन पैदल मार्ग के ऊपर झूल रहा है जहां एक कर्मचारी आकृति नीचे चल रही है, साथ ही एक झूलने-चाप चेतावनी क्षेत्र दिखाया गया है।"
+          },
+          "interaction": "Perform an upward swipe on a 'stop-signal' icon to halt the crane, then drag the worker figure out of the swing-arc zone to a marked safe strip, within 10 seconds.",
+          "correct_outcome": {
+            "en": "Both actions completed in time. Popup: 'Correct -- load halted and worker relocated. Walking under suspended loads is prohibited precisely because of swing and drop risk.'",
+            "hi": "दोनों कार्य समय पर पूरे हुए। पॉपअप: 'सही -- लोड रोका गया और कर्मचारी को हटाया गया। झूलने और गिरने के खतरे के कारण ही लटके हुए लोड के नीचे चलना वर्जित है।'"
+          },
+          "incorrect_outcome": {
+            "en": "Not completed in time. Alarm popup: 'Load swings and strikes worker -- simulated struck-by injury. Suspended-load strikes are a well-documented cause of severe crane-related injuries.'",
+            "hi": "समय पर पूरा नहीं हुआ। अलार्म पॉपअप: 'लोड झूलकर कर्मचारी से टकराया -- अनुकरणित चोट। लटके हुए लोड से टकराना क्रेन-संबंधी गंभीर चोटों का एक सुविख्यात कारण है।'"
+          },
+          "ar_feasibility": null
+        }
+      ]
+    },
+    {
+      "module_id": "MOD03_MACHINE_VEHICLE_ELECTRICAL",
+      "module_name": {
+        "en": "Machine, Vehicle & Electrical Hazard Response",
+        "hi": "मशीन, वाहन एवं विद्युत खतरा प्रतिक्रिया"
+      },
+      "hazard_category": "Machine, Transportation & Electrical Hazards",
+      "relevance": "Struck-by incidents involving haulage/dumper vehicles and unguarded machinery are leading causes of surface-mine and steel-plant injuries in Jharkhand; electrocution from ageing or exposed wiring is a persistent hazard across underground and manufacturing settings alike.",
+      "scan_instruction": {
+        "en": "Scan the floor and any visible machines, panels, or pipes around you.",
+        "hi": "अपने आस-पास के फर्श और किसी भी दिखने वाली मशीन, पैनल या पाइप को स्कैन करें।"
+      },
+      "items": [
+        {
+          "question_id": "MOD03_Q01",
+          "hazard_type": "unguarded_conveyor_pulley",
+          "action_type": "drag_install_guard",
+          "scenario_title": {
+            "en": "Unguarded Rotating Conveyor Pulley",
+            "hi": "बिना गार्ड घूमती कन्वेयर पुली"
+          },
+          "environment_conditions": [
+            {
+              "condition": "NEAR_DETECTED_MACHINERY_FLOOR",
+              "reasoning": "Conveyor pulleys are recognisable machine-shaped detected objects."
+            },
+            {
+              "condition": "CLUTTERED_AREA",
+              "reasoning": "Coal-handling plants register as cluttered with equipment."
+            }
+          ],
+          "hazard_description": {
+            "en": "A rotating pulley/drum overlay is shown exposed at a detected machine object, with no guard panel, and a worker figure's sleeve drifting nearby.",
+            "hi": "पहचाने गए मशीन ऑब्जेक्ट पर एक घूमती पुली/ड्रम बिना गार्ड पैनल के उजागर दिखाई गई है, और पास में एक कर्मचारी आकृति की आस्तीन लहरा रही है।"
+          },
+          "interaction": "Drag a guard-panel icon from a nearby toolbox marker to snap it over the exposed pulley before the sleeve makes contact (7-second window).",
+          "correct_outcome": {
+            "en": "Guard installed in time. Popup: 'Correct -- guard installed before entanglement. Rotating pulleys must always have fixed guards under mines/factories safety rules.'",
+            "hi": "समय पर गार्ड लगाया गया। पॉपअप: 'सही -- फंसने से पहले गार्ड लगाया गया। खान/कारखाना सुरक्षा नियमों के तहत घूमती पुली पर हमेशा स्थायी गार्ड होना चाहिए।'"
+          },
+          "incorrect_outcome": {
+            "en": "Not installed in time. Alarm popup: 'Sleeve caught -- simulated entanglement injury. Unguarded rotating machinery is one of the most common causes of severe limb injuries in coal handling plants.'",
+            "hi": "समय पर नहीं लगाया गया। अलार्म पॉपअप: 'आस्तीन फंसी -- अनुकरणित उलझाव चोट। बिना गार्ड वाली घूमती मशीनरी कोयला हैंडलिंग प्लांटों में गंभीर अंग चोटों का एक सबसे सामान्य कारण है।'"
+          },
+          "ar_feasibility": null
+        },
+        {
+          "question_id": "MOD03_Q02",
+          "hazard_type": "no_loto_before_maintenance",
+          "action_type": "tap_hold_engage_loto",
+          "scenario_title": {
+            "en": "Maintenance Without Lockout-Tagout on Running Machine",
+            "hi": "चलती मशीन पर बिना लॉकआउट-टैगआउट के रखरखाव"
+          },
+          "environment_conditions": [
+            {
+              "condition": "NEAR_DETECTED_MACHINERY_FLOOR",
+              "reasoning": "The isolator switch is placed on/near a detected machine object."
+            },
+            {
+              "condition": "CONFINED_SPACE_LOW_LIGHT",
+              "reasoning": "Machine rooms are frequently enclosed and dimly lit."
+            }
+          ],
+          "hazard_description": {
+            "en": "A worker figure reaches toward a running machine's moving part while the isolator-switch icon nearby still shows 'ON'.",
+            "hi": "एक कर्मचारी आकृति चलती मशीन के गतिशील हिस्से की ओर हाथ बढ़ा रही है जबकि पास का आइसोलेटर स्विच आइकन अभी भी 'ON' दिखा रहा है।"
+          },
+          "interaction": "Tap-and-hold the isolator icon for 3 seconds to switch it off and attach a virtual lock/tag before the worker figure's hand reaches the moving part (7-second window).",
+          "correct_outcome": {
+            "en": "LOTO engaged in time. Popup: 'Correct -- machine isolated and locked out before contact. Lockout-tagout prevents unexpected machine start-up during maintenance.'",
+            "hi": "समय पर लॉकआउट-टैगआउट किया गया। पॉपअप: 'सही -- संपर्क से पहले मशीन आइसोलेट और लॉक की गई। लॉकआउट-टैगआउट रखरखाव के दौरान मशीन के अचानक चालू होने से रोकता है।'"
+          },
+          "incorrect_outcome": {
+            "en": "Not engaged in time. Alarm popup: 'Simulated crush/entanglement injury. Skipping lockout-tagout before maintenance is a leading cause of fatal machine-contact accidents.'",
+            "hi": "समय पर नहीं किया गया। अलार्म पॉपअप: 'अनुकरणित कुचलने/उलझाव चोट। रखरखाव से पहले लॉकआउट-टैगआउट छोड़ना घातक मशीन-संपर्क दुर्घटनाओं का एक प्रमुख कारण है।'"
+          },
+          "ar_feasibility": null
+        },
+        {
+          "question_id": "MOD03_Q03",
+          "hazard_type": "reversing_dumper_blind_spot",
+          "action_type": "drag_figure_to_safe_zone",
+          "scenario_title": {
+            "en": "Reversing Dumper Truck in Blind Spot",
+            "hi": "अंधे क्षेत्र में पीछे आता डंपर ट्रक"
+          },
+          "environment_conditions": [
+            {
+              "condition": "OPEN_OUTDOOR_BRIGHT",
+              "reasoning": "Opencast haul roads are large open outdoor plane areas."
+            },
+            {
+              "condition": "NEAR_DETECTED_MACHINERY_FLOOR",
+              "reasoning": "Haul-road scenarios are near detected heavy vehicle/equipment shapes if present."
+            }
+          ],
+          "hazard_description": {
+            "en": "A large dumper-truck icon reverses along the detected floor plane with an animated blind-spot cone overlapping a worker figure standing behind it.",
+            "hi": "एक बड़ा डंपर-ट्रक आइकन पहचाने गए फर्श तल पर पीछे आ रहा है, साथ ही एनिमेटेड ब्लाइंड-स्पॉट शंकु उसके पीछे खड़ी एक कर्मचारी आकृति को ढक रहा है।"
+          },
+          "interaction": "Drag the worker-figure icon out of the blind-spot cone to a marked safe zone (or tap a horn/alert icon to alert the driver) before the truck's reverse animation reaches the figure (8-second window).",
+          "correct_outcome": {
+            "en": "Worker relocated/alerted in time. Popup: 'Correct -- worker moved out of the blind spot before contact. Struck-by incidents from reversing haulage vehicles are a top cause of surface-mine fatalities.'",
+            "hi": "समय पर कर्मचारी हटाया/सचेत किया गया। पॉपअप: 'सही -- संपर्क से पहले कर्मचारी को अंधे क्षेत्र से हटाया गया। पीछे आते हॉलेज वाहनों से टकराना सतही खदान मौतों का एक शीर्ष कारण है।'"
+          },
+          "incorrect_outcome": {
+            "en": "Not relocated/alerted in time. Alarm popup: 'Simulated struck-by fatality. Reversing heavy vehicles without a spotter or functioning alarm are a leading cause of mine transportation deaths.'",
+            "hi": "समय पर नहीं हटाया/सचेत किया गया। अलार्म पॉपअप: 'अनुकरणित टक्कर से मृत्यु। बिना स्पॉटर या काम करते अलार्म के भारी वाहनों का पीछे आना खदान परिवहन मौतों का एक प्रमुख कारण है।'"
+          },
+          "ar_feasibility": null
+        },
+        {
+          "question_id": "MOD03_Q04",
+          "hazard_type": "exposed_cable_wet_area",
+          "action_type": "tap_hold_isolate_or_tape",
+          "scenario_title": {
+            "en": "Damaged Exposed Cable Near Wet Pump House Floor",
+            "hi": "गीले पंप हाउस फर्श के पास क्षतिग्रस्त उजागर तार"
+          },
+          "environment_conditions": [
+            {
+              "condition": "CONFINED_SPACE_LOW_LIGHT",
+              "reasoning": "Pump houses are enclosed, often dimly lit spaces."
+            },
+            {
+              "condition": "VERTICAL_SURFACE_WITH_MACHINERY_OBJECTS",
+              "reasoning": "Cable runs are shown along a wall near detected pump/machine objects."
+            }
+          ],
+          "hazard_description": {
+            "en": "A damaged cable with exposed copper strands overlays the detected wall near the floor, with a reflective wet-floor patch beneath it.",
+            "hi": "पहचानी गई दीवार पर फर्श के पास एक क्षतिग्रस्त तार दिखाई देता है जिसमें उजागर तांबे के तार हैं, उसके नीचे एक चमकदार गीला-फर्श धब्बा है।"
+          },
+          "interaction": "Tap-and-hold the distribution-board isolator icon for 3 seconds to de-energise the cable before a worker figure's foot enters the wet patch (8-second window).",
+          "correct_outcome": {
+            "en": "Power isolated in time. Popup: 'Correct -- circuit de-energised before contact. Water dramatically increases electrocution risk from damaged wiring.'",
+            "hi": "समय पर बिजली आइसोलेट की गई। पॉपअप: 'सही -- संपर्क से पहले सर्किट डी-एनर्जाइज़ किया गया। पानी क्षतिग्रस्त तारों से करंट लगने का खतरा काफी बढ़ा देता है।'"
+          },
+          "incorrect_outcome": {
+            "en": "Not isolated in time. Alarm popup: 'Simulated electrocution. Exposed wiring in wet areas is a well-documented cause of fatal electric shock in industrial settings.'",
+            "hi": "समय पर आइसोलेट नहीं की गई। अलार्म पॉपअप: 'अनुकरणित करंट लगना। गीले क्षेत्रों में उजागर तार औद्योगिक परिवेश में घातक बिजली के झटके का एक सुविख्यात कारण है।'"
+          },
+          "ar_feasibility": {
+            "issue": "Reliably rendering the isolator icon 'snapped' onto a real detected distribution board depends on the object-detection model recognising panel-like shapes.",
+            "min_requirement": "Trained panel/switchgear object-detection model, or a fallback floating marker."
+          }
+        },
+        {
+          "question_id": "MOD03_Q05",
+          "hazard_type": "grinding_without_guard_or_faceshield",
+          "action_type": "drag_ppe_onto_worker",
+          "scenario_title": {
+            "en": "Grinding Machine Operated Without Guard or Face Shield",
+            "hi": "बिना गार्ड या फेस शील्ड के चलाई जा रही ग्राइंडिंग मशीन"
+          },
+          "environment_conditions": [
+            {
+              "condition": "NEAR_DETECTED_MACHINERY_FLOOR",
+              "reasoning": "The grinding machine is a detected machine-shaped object."
+            },
+            {
+              "condition": "CLUTTERED_AREA",
+              "reasoning": "Fabrication bays register as cluttered indoor areas."
+            }
+          ],
+          "hazard_description": {
+            "en": "A worker figure stands at a grinding machine (missing guard) throwing spark particles, with no face shield on the figure and one lying nearby.",
+            "hi": "एक कर्मचारी आकृति ग्राइंडिंग मशीन (गार्ड गायब) पर खड़ी है, जिससे चिंगारी के कण निकल रहे हैं, आकृति पर कोई फेस शील्ड नहीं है और एक पास में पड़ी है।"
+          },
+          "interaction": "Drag the face-shield icon from the floor onto the worker figure's head before the machine's spark-throw animation reaches eye level (8-second window).",
+          "correct_outcome": {
+            "en": "PPE fitted in time. Popup: 'Correct -- face shield fitted before injury. Grinding without eye/face protection is a leading cause of preventable eye injuries.'",
+            "hi": "समय पर पीपीई पहनाई गई। पॉपअप: 'सही -- चोट से पहले फेस शील्ड पहनाई गई। आंख/चेहरे की सुरक्षा के बिना ग्राइंडिंग करना रोके जाने योग्य आंख की चोटों का एक प्रमुख कारण है।'"
+          },
+          "incorrect_outcome": {
+            "en": "Not fitted in time. Alarm popup: 'Simulated eye/face injury from flying particles. Missing machine guards and PPE together sharply raise the risk of severe grinding injuries.'",
+            "hi": "समय पर नहीं पहनाई गई। अलार्म पॉपअप: 'उड़ते कणों से अनुकरणित आंख/चेहरे की चोट। गायब मशीन गार्ड और पीपीई दोनों मिलकर गंभीर ग्राइंडिंग चोटों के खतरे को काफी बढ़ा देते हैं।'"
+          },
+          "ar_feasibility": null
+        },
+        {
+          "question_id": "MOD03_Q06",
+          "hazard_type": "bypassed_safety_interlock",
+          "action_type": "tap_restore_interlock",
+          "scenario_title": {
+            "en": "Bypassed Safety Interlock on Crusher/Screen",
+            "hi": "क्रशर/स्क्रीन पर बायपास की गई सुरक्षा इंटरलॉक"
+          },
+          "environment_conditions": [
+            {
+              "condition": "NEAR_DETECTED_MACHINERY_FLOOR",
+              "reasoning": "Crushing/screening units are large detected machine objects."
+            },
+            {
+              "condition": "CLUTTERED_AREA",
+              "reasoning": "Crusher house floors register as cluttered with equipment/material."
+            }
+          ],
+          "hazard_description": {
+            "en": "A guard-door icon on the detected machine is shown wedged open with a bypass wire visible across the interlock sensor, machine still running.",
+            "hi": "पहचानी गई मशीन पर एक गार्ड-दरवाज़ा आइकन खुला हुआ फंसाया दिखाया गया है और इंटरलॉक सेंसर पर एक बायपास तार दिखाई दे रहा है, मशीन अभी भी चल रही है।"
+          },
+          "interaction": "Tap-and-hold the bypass-wire icon to remove it, then drag the guard-door icon shut for the interlock to re-engage, within 10 seconds.",
+          "correct_outcome": {
+            "en": "Interlock restored in time. Popup: 'Correct -- interlock restored, guard door secured. Bypassing safety interlocks defeats the machine's core injury-prevention control.'",
+            "hi": "समय पर इंटरलॉक बहाल किया गया। पॉपअप: 'सही -- इंटरलॉक बहाल किया गया, गार्ड दरवाज़ा सुरक्षित किया गया। सुरक्षा इंटरलॉक बायपास करना मशीन के मुख्य चोट-रोकथाम नियंत्रण को निष्क्रिय कर देता है।'"
+          },
+          "incorrect_outcome": {
+            "en": "Not restored in time. Alarm popup: 'Simulated crush injury through open guard. Defeated interlocks are repeatedly linked to serious crushing injuries at crusher/screening plants.'",
+            "hi": "समय पर बहाल नहीं किया गया। अलार्म पॉपअप: 'खुले गार्ड से अनुकरणित कुचलने की चोट। निष्क्रिय की गई इंटरलॉक क्रशर/स्क्रीनिंग प्लांटों में गंभीर कुचलने की चोटों से बार-बार जुड़ी पाई गई हैं।'"
+          },
+          "ar_feasibility": null
+        },
+        {
+          "question_id": "MOD03_Q07",
+          "hazard_type": "unauthorized_substation_entry",
+          "action_type": "drag_barrier_and_ppe",
+          "scenario_title": {
+            "en": "Unauthorised Entry Near HT Substation/Transformer",
+            "hi": "एचटी सबस्टेशन/ट्रांसफार्मर के पास अनधिकृत प्रवेश"
+          },
+          "environment_conditions": [
+            {
+              "condition": "VERTICAL_SURFACE_WITH_MACHINERY_OBJECTS",
+              "reasoning": "Transformer/switchgear enclosures are detected as machine/panel-like vertical objects."
+            },
+            {
+              "condition": "OPEN_OUTDOOR_BRIGHT",
+              "reasoning": "Substation yards are commonly open outdoor areas."
+            }
+          ],
+          "hazard_description": {
+            "en": "A worker figure without PPE approaches a transformer/switchgear icon with an arc-flash warning zone shown around it and no barrier present.",
+            "hi": "बिना पीपीई के एक कर्मचारी आकृति ट्रांसफार्मर/स्विचगियर आइकन के पास पहुंच रही है, जिसके चारों ओर एक आर्क-फ्लैश चेतावनी क्षेत्र दिखाया गया है और कोई बैरियर मौजूद नहीं है।"
+          },
+          "interaction": "Drag a barrier-rope icon around the arc-flash zone and drag arc-rated PPE onto the worker figure before it crosses into the zone (8-second window).",
+          "correct_outcome": {
+            "en": "Barrier and PPE placed in time. Popup: 'Correct -- unauthorised entry prevented. HT equipment areas require restricted access and arc-rated PPE for anyone entering.'",
+            "hi": "समय पर बैरियर और पीपीई लगाई गई। पॉपअप: 'सही -- अनधिकृत प्रवेश रोका गया। एचटी उपकरण क्षेत्रों में प्रवेश करने वाले किसी भी व्यक्ति के लिए प्रतिबंधित पहुंच और आर्क-रेटेड पीपीई आवश्यक है।'"
+          },
+          "incorrect_outcome": {
+            "en": "Not placed in time. Alarm popup: 'Simulated arc-flash injury. Unauthorised entry into HT substation areas without PPE has caused fatal arc-flash and electrocution incidents.'",
+            "hi": "समय पर नहीं लगाई गई। अलार्म पॉपअप: 'अनुकरणित आर्क-फ्लैश चोट। बिना पीपीई के एचटी सबस्टेशन क्षेत्रों में अनधिकृत प्रवेश से घातक आर्क-फ्लैश और करंट लगने की घटनाएं हुई हैं।'"
+          },
+          "ar_feasibility": {
+            "issue": "Convincingly wrapping the arc-flash warning zone/barrier around a real detected transformer enclosure benefits from accurate object silhouette recognition rather than a generic bounding box.",
+            "min_requirement": "Object-detection model trained on switchgear/transformer enclosures; acceptable fallback is a floor-anchored zone marker if the object isn't recognised."
+          }
+        },
+        {
+          "question_id": "MOD03_Q08",
+          "hazard_type": "refueling_with_engine_running",
+          "action_type": "tap_ignition_off",
+          "scenario_title": {
+            "en": "Vehicle Refuelling With Engine Running",
+            "hi": "इंजन चालू रखते हुए वाहन में ईंधन भरना"
+          },
+          "environment_conditions": [
+            {
+              "condition": "OPEN_OUTDOOR_BRIGHT",
+              "reasoning": "Diesel yards/fuelling points at opencast mines are open outdoor areas."
+            },
+            {
+              "condition": "NEAR_DETECTED_MACHINERY_FLOOR",
+              "reasoning": "Refuelling happens beside a detected vehicle/equipment object."
+            }
+          ],
+          "hazard_description": {
+            "en": "A vehicle icon shows a running-engine heat-shimmer/exhaust effect while a fuel-nozzle icon is being inserted into its tank.",
+            "hi": "एक वाहन आइकन में चलते इंजन की गर्मी-लहर/एग्ज़ॉस्ट प्रभाव दिखाई देता है जबकि एक ईंधन-नोज़ल आइकन उसकी टंकी में डाला जा रहा है।"
+          },
+          "interaction": "Tap the ignition-off icon on the vehicle dashboard overlay to stop the engine before the fuel-nozzle icon completes insertion (6-second window).",
+          "correct_outcome": {
+            "en": "Engine stopped in time. Popup: 'Correct -- engine switched off before refuelling. Refuelling with a running engine risks vapour ignition from hot exhaust or sparks.'",
+            "hi": "समय पर इंजन बंद किया गया। पॉपअप: 'सही -- ईंधन भरने से पहले इंजन बंद किया गया। चालू इंजन के साथ ईंधन भरने से गर्म एग्ज़ॉस्ट या चिंगारी से वाष्प में आग लगने का खतरा रहता है।'"
+          },
+          "incorrect_outcome": {
+            "en": "Not stopped in time. Alarm popup: 'Simulated fuel-vapour flash fire. Refuelling with the engine running is a preventable but recurring cause of vehicle-yard fires.'",
+            "hi": "समय पर नहीं रोका गया। अलार्म पॉपअप: 'अनुकरणित ईंधन-वाष्प फ्लैश फायर। चालू इंजन के साथ ईंधन भरना वाहन-यार्ड आग का एक रोके जाने योग्य लेकिन बार-बार होने वाला कारण है।'"
+          },
+          "ar_feasibility": null
+        },
+        {
+          "question_id": "MOD03_Q09",
+          "hazard_type": "frayed_haulage_rope",
+          "action_type": "tap_hold_tagout_drag_tag",
+          "scenario_title": {
+            "en": "Frayed Wire Rope on Underground Incline Haulage",
+            "hi": "भूमिगत इंक्लाइन हॉलेज पर घिसा हुआ तार रस्सा"
+          },
+          "environment_conditions": [
+            {
+              "condition": "CONFINED_SPACE_LOW_LIGHT",
+              "reasoning": "Incline haulage roadways are enclosed, dim underground spaces."
+            },
+            {
+              "condition": "NEAR_DETECTED_MACHINERY_FLOOR",
+              "reasoning": "The haulage rope/drum is a detected machine-like object."
+            }
+          ],
+          "hazard_description": {
+            "en": "A haulage-rope overlay running along the detected passage shows visibly frayed strands at one point, with a tub/car about to be attached.",
+            "hi": "पहचाने गए मार्ग के साथ चल रहे हॉलेज रस्से में एक बिंदु पर स्पष्ट रूप से घिसे हुए तार दिखाई दे रहे हैं, और एक टब/कार जोड़ी जाने वाली है।"
+          },
+          "interaction": "Tap-and-hold the rope at the frayed point to tag it, then drag an 'Out of Service' tag icon onto the haulage control panel before the tub-attachment animation completes (10-second window).",
+          "correct_outcome": {
+            "en": "Tagged out in time. Popup: 'Correct -- haulage stopped before use. A frayed haulage rope can snap under load, and must be tagged out immediately.'",
+            "hi": "समय पर टैगआउट किया गया। पॉपअप: 'सही -- उपयोग से पहले हॉलेज रोका गया। घिसा हुआ हॉलेज रस्सा लोड के तहत टूट सकता है, और इसे तुरंत टैगआउट किया जाना चाहिए।'"
+          },
+          "incorrect_outcome": {
+            "en": "Not tagged out in time. Alarm popup: 'Rope snaps under load -- simulated runaway tub accident. Frayed haulage ropes that go unreported are a recurring cause of fatal underground transport accidents.'",
+            "hi": "समय पर टैगआउट नहीं हुआ। अलार्म पॉपअप: 'लोड के तहत रस्सा टूटा -- अनुकरणित भागती टब दुर्घटना। बिना रिपोर्ट किए घिसे हॉलेज रस्से भूमिगत परिवहन में घातक दुर्घटनाओं का एक बार-बार होने वाला कारण हैं।'"
+          },
+          "ar_feasibility": null
+        },
+        {
+          "question_id": "MOD03_Q10",
+          "hazard_type": "hand_near_nip_point",
+          "action_type": "tap_hold_estop_drag_tool",
+          "scenario_title": {
+            "en": "Reaching Into Roller Nip Point to Clear a Jam",
+            "hi": "जाम साफ करने के लिए रोलर के निप पॉइंट में हाथ डालना"
+          },
+          "environment_conditions": [
+            {
+              "condition": "NEAR_DETECTED_MACHINERY_FLOOR",
+              "reasoning": "The roller/crusher unit is a detected machine object."
+            },
+            {
+              "condition": "CLUTTERED_AREA",
+              "reasoning": "Processing floors with jammed material register as cluttered."
+            }
+          ],
+          "hazard_description": {
+            "en": "A worker figure's hand reaches toward the in-running nip point between two rollers on the detected machine, which is still turning, to clear jammed material.",
+            "hi": "एक कर्मचारी आकृति का हाथ पहचानी गई मशीन पर दो रोलर के बीच चल रहे निप पॉइंट की ओर बढ़ रहा है, जो अभी भी घूम रहा है, जाम हुई सामग्री साफ करने के लिए।"
+          },
+          "interaction": "Tap-and-hold the emergency-stop icon for 2 seconds to halt the rollers, then drag a jam-clearing tool icon (instead of the hand) into the nip point, before the hand-reach animation completes (7-second window).",
+          "correct_outcome": {
+            "en": "Machine stopped and tool used in time. Popup: 'Correct -- machine stopped before hand entered the nip point. Never clear a jam by hand on a running machine -- always stop and use a tool.'",
+            "hi": "समय पर मशीन रोकी गई और औज़ार का उपयोग किया गया। पॉपअप: 'सही -- हाथ निप पॉइंट में जाने से पहले मशीन रोकी गई। चलती मशीन पर कभी भी हाथ से जाम साफ न करें -- हमेशा रोककर औज़ार का उपयोग करें।'"
+          },
+          "incorrect_outcome": {
+            "en": "Not stopped in time. Alarm popup: 'Simulated hand/arm crush injury at nip point. Reaching into a running nip point to clear jams is one of the most common causes of amputation injuries in processing plants.'",
+            "hi": "समय पर नहीं रोकी गई। अलार्म पॉपअप: 'निप पॉइंट पर अनुकरणित हाथ/बांह कुचलने की चोट। चलते निप पॉइंट में हाथ डालकर जाम साफ करना प्रोसेसिंग प्लांटों में अंग-विच्छेद चोटों का एक सबसे सामान्य कारण है।'"
+          },
+          "ar_feasibility": null
+        }
+      ]
+    }
+  ],
+  "technical_dependencies": [
+    {
+      "id": "TD01",
+      "title": "Freehand gesture / fine-motor interactions (valve rotate, pinch-bond)",
+      "affected_items": [
+        "MOD01_Q09",
+        "MOD01_Q07"
+      ],
+      "gap": "Standard markerless AR (plane + light + object detection) has no native hand/finger tracking.",
+      "min_capability_needed": "Hand-tracking SDK layered on top of ARCore/ARKit/WebXR (e.g. MediaPipe Hands or an equivalent gesture SDK), only if true freehand recognition is required.",
+      "fallback": "Implement as a 2D touchscreen gesture (circular drag for 'rotate', two-point drag for 'bond') -- fully achievable with standard touch input and no extra dependency."
+    },
+    {
+      "id": "TD02",
+      "title": "Realistic snapping/occlusion of hazard overlays onto real panels, transformers, pulleys",
+      "affected_items": [
+        "MOD01_Q03",
+        "MOD03_Q04",
+        "MOD03_Q07"
+      ],
+      "gap": "Basic plane detection returns flat surfaces only; it does not recognise or outline specific equipment shapes (switchgear, transformers, panels).",
+      "min_capability_needed": "A trained object-detection/segmentation model for industrial equipment silhouettes, and/or dense depth (ARKit LiDAR scene reconstruction / ARCore Depth API) for correct occlusion.",
+      "fallback": "Anchor the hazard/action icon to a floating marker near the detected vertical plane if no specific object is recognised."
+    },
+    {
+      "id": "TD03",
+      "title": "Reliable tracking in very low-light or visually featureless underground-mine-like conditions",
+      "affected_items": [
+        "MOD01_Q02",
+        "MOD01_Q06",
+        "MOD01_Q07",
+        "MOD02_Q01",
+        "MOD03_Q02",
+        "MOD03_Q04",
+        "MOD03_Q09"
+      ],
+      "gap": "Markerless SLAM relies on visual feature points; it degrades or fails in very dark or low-texture (dusty, uniform-surface) environments -- a realistic condition in actual mines.",
+      "min_capability_needed": "Minimum-ambient-lux guidance shown to the trainee before scanning, and/or an active depth sensor (ToF/structured light) as a fallback tracking source for genuinely dark deployments.",
+      "fallback": "Cap these hazards to a minimum detected-lux threshold; if not met, prompt the trainee to add light rather than silently failing."
+    },
+    {
+      "id": "TD04",
+      "title": "Overhead/ceiling plane detection for roof-fall scenarios",
+      "affected_items": [
+        "MOD02_Q01"
+      ],
+      "gap": "Mobile AR frameworks detect horizontal (floor) and vertical (wall) planes more reliably than upward-facing ceiling planes, especially at typical gallery heights and in low light.",
+      "min_capability_needed": "Extended/upward-biased plane detection tuned for ceiling recognition.",
+      "fallback": "If no ceiling plane registers, anchor the hazard to the highest detected vertical plane instead of a true ceiling."
+    },
+    {
+      "id": "TD05",
+      "title": "Real plane-edge / drop-off detection for bench, platform, and shaft-opening scenarios",
+      "affected_items": [
+        "MOD02_Q02",
+        "MOD02_Q03",
+        "MOD02_Q05",
+        "MOD02_Q07"
+      ],
+      "gap": "Basic plane detection returns plane extents but does not reliably flag a genuine edge/discontinuity (e.g., a real drop-off vs. just the edge of the scanned area).",
+      "min_capability_needed": "Robust edge/boundary detection layered on the plane-detection API (available on some but not all ARCore/ARKit configurations).",
+      "fallback": "Place a virtual edge marker at a fixed distance from the trainee's scan origin when no real edge is detected."
+    },
+    {
+      "id": "TD06",
+      "title": "Adequate open floor space validation for physical-movement tasks",
+      "affected_items": [
+        "MOD01_Q02",
+        "MOD02_Q05"
+      ],
+      "gap": "Tasks requiring the trainee to physically walk/step to a safe zone assume enough real, obstacle-free floor area is available -- this is a scene-understanding/validation step, not a new sensor.",
+      "min_capability_needed": "None beyond standard world tracking; requires app-side logic to check detected floor-plane size before spawning a movement-based task.",
+      "fallback": "Substitute a tap-based 'move to safe zone' interaction if the scanned area is too small for safe physical movement."
+    }
+  ]
+}

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training Modules — SafeAR Assessment Platform</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/scenario.css">
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <header class="app-nav">
+        <a class="brand" href="index.html">
+            <span class="brand-mark">🛡️</span>
+            <div>
+                <strong>Safe<span>AR</span></strong>
+                <small>Training Catalogue</small>
+            </div>
+        </a>
+        <div class="app-nav-right">
+            <span class="app-nav-user" id="userName">Trainee</span>
+            <a href="language.html" class="app-nav-link" id="langLink">Language</a>
+            <a href="results.html" class="app-nav-link">My Results</a>
+            <button class="app-nav-logout" id="logoutBtn">Logout</button>
+        </div>
+    </header>
+
+    <main class="scenarios-page">
+        <div class="scenarios-header">
+            <div class="section-label" id="catalogueLabel">ASSESSMENT CATALOGUE</div>
+            <h1 id="pageTitle">Choose a Safety Training Module</h1>
+            <p class="section-intro" id="pageSubtitle">
+                Select a module to begin. Your language and progress carry over automatically.
+            </p>
+        </div>
+
+        <!-- Module cards render here, one per JSON module -->
+        <div class="scenario-cards-row" id="moduleCardsRow">
+            <div style="color:var(--text-muted); padding:24px;" id="loadingNotice">Loading training modules…</div>
+        </div>
+
+        <!-- How it works strip -->
+        <div class="ar-instructions">
+            <div class="section-label">HOW IT WORKS</div>
+            <h2>Camera AR — Or a Reliable 3D Fallback</h2>
+            <p class="section-intro">
+                SafeAR tries real camera-based augmented reality first. If your device or browser doesn't support it,
+                training automatically continues in Simulation Mode — the same hazards, timing, and scoring, just
+                viewed as an orbit-able 3D scene instead of your camera feed.
+            </p>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <span class="step-number-badge">01</span>
+                    <h3>Pick a Module</h3>
+                    <p>Each module covers one real hazard category drawn from Jharkhand mining &amp; manufacturing safety data.</p>
+                </div>
+                <div class="step-card">
+                    <span class="step-number-badge">02</span>
+                    <h3>Scan / Prepare</h3>
+                    <p>Grant camera access for AR, or skip straight to the 3D Simulation Mode — either way works.</p>
+                </div>
+                <div class="step-card">
+                    <span class="step-number-badge">03</span>
+                    <h3>Respond to Hazards</h3>
+                    <p>Tap, hold, drag or move to resolve each hazard correctly before its countdown ends.</p>
+                </div>
+                <div class="step-card">
+                    <span class="step-number-badge">04</span>
+                    <h3>Get Scored</h3>
+                    <p>See your score and rating instantly, synced to your certified results history.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-brand">Safe<span>AR</span></div>
+        <p>Industrial Safety Training Platform &middot; SIH26041</p>
+        <a href="index.html">Back to Home</a>
+    </footer>
+
+    <script src="js/config.js"></script>
+    <script src="js/engine/i18n.js"></script>
+    <script src="js/engine/scenarioEngine.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        // Auth guard — must be logged in
+        if (!SafeAuth.requireAuth()) {
+            // requireAuth() will redirect to login
+        } else {
+            const user = SafeAuth.getUser();
+            const nameEl = document.getElementById("userName");
+            if (nameEl && user) {
+                nameEl.textContent = user.name || user.email || "Trainee";
+            }
+
+            document.getElementById("logoutBtn").addEventListener("click", () => {
+                SafeAuth.logout();
+            });
+
+            // A session with no language chosen yet gets routed there first.
+            if (!I18n.hasLang()) {
+                window.location.href = "language.html?next=" + encodeURIComponent("scenarios.html");
+            } else {
+                init();
+            }
+        }
+
+        const MODULE_ICONS = {
+            MOD01_FIRE_GAS_EXPLOSION: "🔥",
+            MOD02_FALL_COLLAPSE_HEIGHT: "🪜",
+            MOD03_MACHINE_VEHICLE_ELECTRICAL: "⚙️"
+        };
+
+        function renderChrome() {
+            document.getElementById("pageTitle").textContent = I18n.t("moduleSelect_title");
+            document.getElementById("pageSubtitle").textContent = I18n.t("moduleSelect_subtitle");
+            document.getElementById("langLink").textContent = I18n.getLang() === "hi" ? "भाषा" : "Language";
+        }
+
+        function init() {
+            renderChrome();
+            ScenarioEngine.load().then(() => {
+                const modules = ScenarioEngine.getModuleSummaries();
+                const row = document.getElementById("moduleCardsRow");
+                row.innerHTML = modules.map((m, i) => {
+                    const num = String(i + 1).padStart(2, "0");
+                    const icon = MODULE_ICONS[m.module_id] || "🛡️";
+                    return `
+                        <article class="scenario-card-item">
+                            <div class="scenario-card-number">MODULE ${num}</div>
+                            <div class="scenario-card-icon-sm">${icon}</div>
+                            <h3>${I18n.field(m.module_name)}</h3>
+                            <p class="scenario-card-subtitle">${m.hazard_category}</p>
+                            <p>${m.relevance}</p>
+                            <div class="scenario-card-tags">
+                                <span class="tag tag-hazard">${m.itemCount} ${I18n.t("moduleSelect_questions")}</span>
+                            </div>
+                            <a href="training.html?module=${encodeURIComponent(m.module_id)}" class="scenario-start-btn-sm">
+                                ${I18n.t("moduleSelect_start")} →
+                            </a>
+                        </article>
+                    `;
+                }).join("");
+            }).catch(err => {
+                console.error("[Scenarios] Failed to load training content:", err);
+                document.getElementById("moduleCardsRow").innerHTML =
+                    `<div style="color:#f87171; padding:24px;">Could not load training modules. Please verify the backend is running and try again.</div>`;
+            });
+        }
+    </script>
+</body>
+</html>

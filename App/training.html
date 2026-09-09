@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training — SafeAR</title>
+
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/scenario.css">
+
+    <!-- A-Frame — drives both the best-effort WebXR AR view and the always-available
+         Simulation Mode 3D view from the same scene (see App/js/engine/arManager.js) -->
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="scenarios.html">
+            <span class="brand-mark">S</span>
+            <span><strong>SafeAR</strong><small>Industrial AR Training</small></span>
+        </a>
+        <nav>
+            <a href="scenarios.html">All Modules</a>
+            <a href="results.html">My Results</a>
+        </nav>
+        <div style="display:flex; align-items:center; gap:14px;">
+            <span id="traineeName" style="color:var(--text); font-size:13px; font-weight:600;"></span>
+            <button class="outline-btn" id="logoutBtn" style="padding:6px 12px; font-size:12px;">Logout</button>
+        </div>
+    </header>
+
+    <main class="page" id="trainingApp">
+        <!-- Populated entirely by js/training.js — camera prep, scan, per-question
+             training loop, feedback and module completion all render here. -->
+    </main>
+
+    <footer class="footer">
+        <span>Best-effort WebXR AR · Reliable 3D Simulation fallback · Certified safety procedures.</span>
+        <span>SIH26041 — SafeAR Vocational Safety Platform</span>
+    </footer>
+
+    <!-- Config & shared engine (order matters: later files depend on earlier ones) -->
+    <script src="js/config.js"></script>
+    <script src="js/engine/i18n.js"></script>
+    <script src="js/engine/scenarioEngine.js"></script>
+    <script src="js/engine/evaluationEngine.js"></script>
+    <script src="js/engine/scoringManager.js"></script>
+    <script src="js/engine/sessionManager.js"></script>
+    <script src="js/engine/loggingService.js"></script>
+    <script src="js/engine/environmentManager.js"></script>
+    <script src="js/engine/arManager.js"></script>
+    <script src="js/engine/interactionEngine.js"></script>
+    <script src="js/engine/interactionConfigs.js"></script>
+    <script src="js/scenes/props.js"></script>
+    <script src="js/scenes/mod01.js"></script>
+    <script src="js/scenes/mod02.js"></script>
+    <script src="js/scenes/mod03.js"></script>
+    <script src="js/scenes/index.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/training.js"></script>
+</body>
+</html>

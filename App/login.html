@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In — SafeAR Industrial Training</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <header class="app-nav">
+        <a class="brand" href="index.html">
+            <span class="brand-mark">🛡️</span>
+            <div>
+                <strong>Safe<span>AR</span></strong>
+                <small>Industrial Safety Training</small>
+            </div>
+        </a>
+        <div>
+            <a href="index.html" class="app-nav-link">← Back to Home</a>
+        </div>
+    </header>
+
+    <div class="auth-page">
+        <div class="auth-container">
+            <div class="auth-brand">
+                <div class="footer-brand" style="font-size:32px; justify-content:center; margin-bottom:8px;">
+                    Safe<span>AR</span>
+                </div>
+                <p class="auth-subtitle" style="color:var(--text-muted); font-size:14px; margin:0;">
+                    Industrial Safety Assessment Platform
+                </p>
+            </div>
+
+            <form class="auth-form" id="loginForm" autocomplete="on">
+                <h2>Sign In</h2>
+                <p class="auth-hint">Access your training simulations and certified results.</p>
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required placeholder="name@organization.com" autocomplete="email">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required placeholder="••••••••" minlength="6" autocomplete="current-password">
+                </div>
+
+                <div id="errorMsg" class="auth-error" style="display:none;"></div>
+
+                <button type="submit" class="auth-btn" id="loginBtn" style="width:100%; margin-top:8px;">
+                    <span class="btn-text">Sign In →</span>
+                    <span class="btn-loading" style="display:none;">Authenticating…</span>
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                <p>New to SafeAR? <a href="register.html">Create an Account</a></p>
+                <div style="font-size:12px; color:var(--text-muted); margin-top:12px;">
+                    Trainer accounts will be automatically directed to the Instructor Analytics Dashboard.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-brand">Safe<span>AR</span></div>
+        <p>Industrial Safety Training Platform &middot; SIH26041</p>
+        <a href="index.html">Back to Home</a>
+    </footer>
+
+    <script src="js/config.js"></script>
+    <script src="js/engine/i18n.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        function traineeLandingPage() {
+            return I18n.hasLang() ? "scenarios.html" : "language.html";
+        }
+
+        // If already logged in, redirect
+        if (SafeAuth.isLoggedIn()) {
+            const user = SafeAuth.getUser();
+            if (user && user.role === "trainer") {
+                window.location.href = "../dashboard/dashboard.html";
+            } else {
+                window.location.href = traineeLandingPage();
+            }
+        }
+
+        const form = document.getElementById("loginForm");
+        const errorMsg = document.getElementById("errorMsg");
+        const loginBtn = document.getElementById("loginBtn");
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            errorMsg.style.display = "none";
+
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value;
+
+            // Show loading state
+            loginBtn.querySelector(".btn-text").style.display = "none";
+            loginBtn.querySelector(".btn-loading").style.display = "inline";
+            loginBtn.disabled = true;
+
+            const result = await SafeAuth.login(email, password);
+
+            if (result.success) {
+                // Redirect based on role
+                const user = result.user || {};
+                const role = (user.role || "").trim().toLowerCase();
+                if (role === "trainer" || role === "admin") {
+                    window.location.href = "../dashboard/dashboard.html";
+                } else {
+                    window.location.href = traineeLandingPage();
+                }
+            } else {
+                errorMsg.textContent = result.message || "Login failed. Please verify your credentials.";
+                errorMsg.style.display = "block";
+                loginBtn.querySelector(".btn-text").style.display = "inline";
+                loginBtn.querySelector(".btn-loading").style.display = "none";
+                loginBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

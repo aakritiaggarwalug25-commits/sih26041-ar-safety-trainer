@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Language — SafeAR</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/scenario.css">
+</head>
+<body>
+    <header class="app-nav">
+        <a class="brand" href="index.html">
+            <span class="brand-mark">🛡️</span>
+            <div>
+                <strong>Safe<span>AR</span></strong>
+                <small>Industrial Safety Training</small>
+            </div>
+        </a>
+        <div class="app-nav-right">
+            <button class="app-nav-logout" id="logoutBtn">Logout</button>
+        </div>
+    </header>
+
+    <div class="auth-page">
+        <div class="auth-container">
+            <div class="auth-brand">
+                <div class="footer-brand" style="font-size:32px; justify-content:center; margin-bottom:8px;">
+                    Safe<span>AR</span>
+                </div>
+            </div>
+
+            <h2 id="langTitle" style="margin:0 0 6px;">Choose Your Language</h2>
+            <p class="auth-hint" id="langSubtitle">
+                This will be used throughout your training session — scan instructions, hazards, feedback and results.
+            </p>
+
+            <div class="lang-choice-row">
+                <button class="lang-choice" data-lang="en">
+                    <span>English</span>
+                    <span class="arrow">→</span>
+                </button>
+                <button class="lang-choice" data-lang="hi">
+                    <span>हिन्दी (Hindi)</span>
+                    <span class="arrow">→</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-brand">Safe<span>AR</span></div>
+        <p>Industrial Safety Training Platform &middot; SIH26041</p>
+        <a href="index.html">Back to Home</a>
+    </footer>
+
+    <script src="js/config.js"></script>
+    <script src="js/engine/i18n.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        if (!SafeAuth.requireAuth()) {
+            // requireAuth() redirects to login
+        }
+
+        document.getElementById("logoutBtn").addEventListener("click", () => SafeAuth.logout());
+
+        function render() {
+            document.getElementById("langTitle").textContent = I18n.t("langSelect_title");
+            document.getElementById("langSubtitle").textContent = I18n.t("langSelect_subtitle");
+            document.querySelector('[data-lang="en"] span').textContent = I18n.t("langSelect_english");
+            document.querySelector('[data-lang="hi"] span').textContent = I18n.t("langSelect_hindi");
+        }
+        render();
+
+        document.querySelectorAll(".lang-choice").forEach(btn => {
+            btn.addEventListener("click", () => {
+                I18n.setLang(btn.dataset.lang);
+                const params = new URLSearchParams(window.location.search);
+                window.location.href = params.get("next") || "scenarios.html";
+            });
+        });
+    </script>
+</body>
+</html>

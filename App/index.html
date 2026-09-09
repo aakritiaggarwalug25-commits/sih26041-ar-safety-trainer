@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SafeAR | Industrial Safety Training & Assessment Platform</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="topbar">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">🛡️</span>
+      <div>
+        <strong>Safe<span>AR</span></strong>
+        <small>Industrial Safety Training</small>
+      </div>
+    </a>
+    <nav>
+      <a href="#how-it-works">How It Works</a>
+      <a href="#scenarios">Scenarios</a>
+      <a href="#trainers">For Trainers</a>
+      <a href="#about">About</a>
+    </nav>
+    <div style="display:flex; align-items:center; gap:12px;">
+      <a href="login.html" class="outline-btn" style="padding:8px 16px; font-size:13px;">Sign In</a>
+      <a href="login.html" class="primary-button" style="padding:8px 18px; font-size:13px;">Start Training →</a>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="landing-hero" id="home">
+    <div class="hero-copy">
+      <div class="section-label">🥽 AR-Powered Industrial Safety Assessment</div>
+      <h1>Realistic Safety Training &amp; <span>Decision Assessment</span> in AR</h1>
+      <p class="section-intro">
+        Transform high-stakes workplace safety procedures into immersive, spatial AR simulations. 
+        Detect hazards, execute emergency procedures, and get certified assessment telemetry without real-world risk.
+      </p>
+
+      <div class="hero-actions">
+        <a class="primary-button" href="login.html">
+          Start Training <span>→</span>
+        </a>
+        <a class="secondary-button" href="#scenarios">
+          Explore Scenarios 🥽
+        </a>
+      </div>
+
+      <div class="metric-pill-row">
+        <div class="metric-pill">
+          <span>🎯</span>
+          <span><strong>30</strong> Scenarios</span>
+        </div>
+        <div class="metric-pill">
+          <span>🛡️</span>
+          <span><strong>3</strong> Hazard Modules</span>
+        </div>
+        <div class="metric-pill">
+          <span>📷</span>
+          <span><strong>WebXR AR</strong> + 3D Fallback</span>
+        </div>
+        <div class="metric-pill">
+          <span>📊</span>
+          <span><strong>Live</strong> Analytics</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live AR Interactive Telemetry Preview Card -->
+    <div class="hero-preview-card">
+      <div class="preview-topbar">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:18px;">🔥</span>
+          <strong style="font-size:14px; color:var(--text-primary);">MOD01_Q01 · Coal Dust Ignition</strong>
+        </div>
+        <div class="preview-badge-live">LIVE 3D</div>
+      </div>
+
+      <div class="preview-viewport">
+        <div class="preview-scanline"></div>
+        <div class="preview-3d-graphic">🧯</div>
+        <div class="preview-overlay-tag">PROCEDURAL 3D SCENE · WebXR + Fallback</div>
+      </div>
+
+      <div class="preview-telemetry-grid">
+        <div class="telemetry-item">
+          <span>Interaction</span>
+          <strong style="color:var(--accent-green);">Tap &amp; Hold 2s</strong>
+        </div>
+        <div class="telemetry-item">
+          <span>Decision Score</span>
+          <strong style="color:var(--accent-amber);">100% (Pass)</strong>
+        </div>
+        <div class="telemetry-item">
+          <span>Response Time</span>
+          <strong>3.2s</strong>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section class="content-section alternate" id="how-it-works">
+    <div class="section-container">
+      <div class="section-label">ASSESSMENT WORKFLOW</div>
+      <h2>Train. Decide. Master.</h2>
+      <p class="section-intro">SafeAR replaces static quizzes with spatial decision-making and instant assessment telemetry.</p>
+
+      <div class="steps-grid">
+        <article class="step-card">
+          <span class="step-number-badge">STEP 01</span>
+          <h3>Select Safety Module</h3>
+          <p>Choose between Fire, Gas &amp; Explosion Response, Fall &amp; Working-at-Height Response, or Machine, Vehicle &amp; Electrical Response.</p>
+        </article>
+
+        <article class="step-card">
+          <span class="step-number-badge">STEP 02</span>
+          <h3>Scan or Simulate</h3>
+          <p>Grant camera access for markerless WebXR AR, or skip straight to a reliable 3D Simulation Mode — same hazards, same scoring.</p>
+        </article>
+
+        <article class="step-card">
+          <span class="step-number-badge">STEP 03</span>
+          <h3>Respond to Hazards</h3>
+          <p>Tap, hold, drag, rotate or move to resolve fire, fall, and machine/electrical hazards before each countdown ends.</p>
+        </article>
+
+        <article class="step-card">
+          <span class="step-number-badge">STEP 04</span>
+          <h3>Certified Telemetry</h3>
+          <p>Receive comprehensive performance scores, time audits, and automated sync to the Instructor Analytics Dashboard.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Scenario Catalogue Preview Section -->
+  <section class="content-section" id="scenarios">
+    <div class="section-label">TRAINING SCENARIOS</div>
+    <h2>Industry-Standard Safety Scenarios</h2>
+    <p class="section-intro">Comprehensive training modules designed around critical DGMS and OSHA industrial safety standards.</p>
+
+    <div class="scenario-cards-row">
+      <article class="scenario-card-item">
+        <div class="scenario-card-number">MODULE 01</div>
+        <div class="scenario-card-icon-sm">🔥</div>
+        <h3>Fire, Gas &amp; Explosion Response</h3>
+        <p class="scenario-card-subtitle">Jharia coalfield ignition risk</p>
+        <p>Extinguish naked flames near coal dust, escape methane pockets, isolate sparking cables, and more — 10 distinct hazard scenarios.</p>
+        <div class="scenario-card-tags">
+          <span class="tag tag-hazard">10 Scenarios</span>
+        </div>
+        <a href="login.html" class="scenario-start-btn-sm">Start Module →</a>
+      </article>
+
+      <article class="scenario-card-item">
+        <div class="scenario-card-number">MODULE 02</div>
+        <div class="scenario-card-icon-sm">🪜</div>
+        <h3>Fall, Collapse &amp; Height Response</h3>
+        <p class="scenario-card-subtitle">DGMS's #1 cause of mine fatalities</p>
+        <p>Support cracked roof strata, barricade open shafts, secure harness lanyards, and correct unsafe ladder angles — 10 hazard scenarios.</p>
+        <div class="scenario-card-tags">
+          <span class="tag tag-evac">10 Scenarios</span>
+        </div>
+        <a href="login.html" class="scenario-start-btn-sm">Start Module →</a>
+      </article>
+
+      <article class="scenario-card-item">
+        <div class="scenario-card-number">MODULE 03</div>
+        <div class="scenario-card-icon-sm">⚙️</div>
+        <h3>Machine, Vehicle &amp; Electrical</h3>
+        <p class="scenario-card-subtitle">Struck-by &amp; electrocution risk</p>
+        <p>Guard rotating pulleys, lock out machinery before maintenance, dodge reversing haulage vehicles, and more — 10 hazard scenarios.</p>
+        <div class="scenario-card-tags">
+          <span class="tag tag-report">10 Scenarios</span>
+        </div>
+        <a href="login.html" class="scenario-start-btn-sm">Start Module →</a>
+      </article>
+    </div>
+  </section>
+
+  <!-- For Trainers Showcase Section -->
+  <section class="content-section alternate" id="trainers">
+    <div class="section-container">
+      <div class="section-label">FOR INSTRUCTORS &amp; SAFETY MANAGERS</div>
+      <h2>Actionable Performance Insights</h2>
+      <p class="section-intro">Monitor workforce competency, identify decision bottlenecks, and access compliance audit reports.</p>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:32px; align-items:center;">
+        <div class="step-card" style="padding:32px;">
+          <h3 style="font-size:22px; margin-bottom:16px;">Enterprise Analytics Features</h3>
+          <ul style="color:var(--text-secondary); font-size:14.5px; line-height:1.9; padding-left:20px; margin:0;">
+            <li>Real-time score aggregation and pass/fail distributions</li>
+            <li>Step-by-step decision telemetry audits for every trainee</li>
+            <li>Scenario-specific completion rate tracking</li>
+            <li>Exportable compliance records stored securely in Firestore</li>
+          </ul>
+        </div>
+
+        <div class="step-card" style="padding:32px; background:linear-gradient(145deg, #0f1f33 0%, #091322 100%); border-color:var(--primary);">
+          <div style="font-size:32px; margin-bottom:12px;">📊</div>
+          <h3 style="font-size:22px; margin-bottom:10px;">Live Trainer Dashboard</h3>
+          <p style="margin-bottom:24px;">Log in with a verified trainer account to inspect real-time trainee completion rates and detailed step audits.</p>
+          <a href="../dashboard/dashboard.html" class="primary-button" style="width:fit-content;">
+            Open Trainer Dashboard ↗
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section class="content-section" id="about">
+    <div class="section-label">ABOUT SAFEAR</div>
+    <h2>Better decisions start with realistic practice.</h2>
+    <p class="section-intro">
+      SafeAR is an AR-powered vocational training simulator built for SIH26041. 
+      By blending camera-based augmented reality, authentic 3D equipment interaction, and live instructor analytics, 
+      SafeAR makes industrial safety training measurable, engaging, and certifiable.
+    </p>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-brand">Safe<span>AR</span></div>
+    <div>SIH26041 &middot; AR-Based Vocational Safety Simulator &middot; DGMS / OSHA Aligned</div>
+    <a href="#home">Back to top ↑</a>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>
