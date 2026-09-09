@@ -60,7 +60,7 @@ Workers in Jharkhand's mining and manufacturing sectors face life-threatening ha
 | 1 | [Person 1] | AR Development (A-Frame, AR.js, 3D scenes) |
 | 2 | [Person 2] | Simulation Engine (scenario logic, scoring system) |
 | 3 | [Person 3] | Backend API (Express.js, Node.js, Firebase integration) |
-| 4 | [Person 4 - YOU] | Database & Documentation (Firebase, GitHub, README) |
+| 4 | [Person 4] | Database & Documentation (Firebase, GitHub, README) |
 | 5 | [Person 5] | Trainer Dashboard (frontend, charts, analytics) |
 | 6 | [Person 6] | UI/UX Design (HTML, CSS, responsive layout) |
 
